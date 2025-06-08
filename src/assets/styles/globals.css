@@ -1,0 +1,26 @@
+@import "tailwindcss";
+.img-basic {
+    @apply h-auto w-full;
+  }
+  .img-h {
+    @apply h-full w-full;
+  }
+  :root {
+    font-size: 0.9259259259vw;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+.item-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.item-inactive {
+  opacity: 0;
+  pointer-events: none;
+}
+button {
+  cursor: pointer;
+}
