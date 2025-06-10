@@ -7,8 +7,8 @@ export default function FormSetting() {
     merchantId: 'b000052',
     deptId: '000068',
     token: '948b1e457ba7c66f6ccc47a880197308e',
-    redeemCallbackUrl: 'https://worldesim.vn/wp-json/worldmove/v1/webhook/',
-    esimOrderCallbackUrl: 'https://worldesim.vn/wp-json/worldmove/v1/callback-mybuyesim/',
+    redeemCallbackUrl: 'https://esim-dulich.com/wp-json/sim-nest/v1/webhook/',
+    esimOrderCallbackUrl: 'https://esim-dulich.com/wp-json/sim-nest/v1/callback-mybuyesim/',
     esimOrderRedeemCallbackUrl: '',
     topupCallbackUrl: '',
   })

@@ -2,15 +2,280 @@
 "use client";
 import { useState } from "react";
 
-const mockData = Array.from({ length: 36 }, (_, i) => ({
-  company: "WORLDESIM COMPANY LIMITED",
-  productName: `Product ${i + 1}`,
-  region: i % 2 === 0 ? "Japan" : i % 3 === 0 ? "China" : "Korea",
-  type: i % 3 === 0 ? "eSIM" : i % 2 === 0 ? "Top-Up SIM" : "SIM",
-  price: 90 + i * 5,
-  cendPrice: "-",
-  showed: "N",
-}));
+const mockData = [
+  {
+    "productName":"AIS399 Multi-region, 8 Days, 6GB, 384kbps",
+    "region":"Worldwide",
+    "type":"eSIM",
+    "price":13,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"AIS899 Multi-region, 15 Days, 6GB, 384kbps",
+    "region":"Worldwide",
+    "type":"eSIM",
+    "price":32,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"Brazil TIM, 30 Days, 15GB",
+    "region":"Brazil",
+    "type":"eSIM",
+    "price":24,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"DTAC Thailand Happy Tourist219",
+    "region":"Thailand",
+    "type":"eSIM",
+    "price":5,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"DTAC Thailand Happy Tourist349",
+    "region":"Thailand",
+    "type":"eSIM",
+    "price":8,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"DTAC Thailand Happy Tourist449",
+    "region":"Thailand",
+    "type":"eSIM",
+    "price":11,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"Japan IIJ, 5 Days, 50GB, 256kbps",
+    "region":"Japan",
+    "type":"eSIM",
+    "price":22,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"Japan IIJ, 5 Days, 50GB, 256kbps",
+    "region":"Japan",
+    "type":"eSIM",
+    "price":24,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"Japan IIJ, 7 Days, 50GB, 256kbps",
+    "region":"Japan",
+    "type":"eSIM",
+    "price":23,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"Japan IIJ, 10 Days, 50GB, 256kbps",
+    "region":"Japan",
+    "type":"eSIM",
+    "price":26,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"Japan IIJ, 30 Days, 50GB, 256kbps",
+    "region":"Japan",
+    "type":"eSIM",
+    "price":31,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"Japan KDDI, 4 Days, Unlimited Data \/day",
+    "region":"Japan",
+    "type":"eSIM",
+    "price":17,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"Japan KDDI, 7 Days, Unlimited Data \/day",
+    "region":"Japan",
+    "type":"eSIM",
+    "price":20,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"Japan KDDI, 10 Days, Unlimited Data \/day",
+    "region":"Japan",
+    "type":"eSIM",
+    "price":25,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"Japan KDDI, 15 Days, Unlimited Data \/day",
+    "region":"Japan",
+    "type":"eSIM",
+    "price":27,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"Laos Unitel, 5 Days, 10GB",
+    "region":"Laos",
+    "type":"eSIM",
+    "price":3,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"Laos Unitel, 10 Days, 15GB",
+    "region":"Laos",
+    "type":"eSIM",
+    "price":4,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"Laos Unitel, 15 Days, 30GB",
+    "region":"Laos",
+    "type":"eSIM",
+    "price":5,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"Morocco, 30 Days, 10GB",
+    "region":"Morocco",
+    "type":"eSIM",
+    "price":8,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"Mongolia Unitel, 10 Days, 15GB",
+    "region":"Mongolia",
+    "type":"eSIM",
+    "price":9,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"O2 EU, 30 Days, 35GB",
+    "region":"Europe",
+    "type":"eSIM",
+    "price":13,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"Europe Orange, 30 Days, 30GB, Unlimited talk, 1000 msg",
+    "region":"Europe",
+    "type":"eSIM",
+    "price":22,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"Europe Orange, 30 Days, 100GB, Unlimited talk, 1000 msg",
+    "region":"Europe",
+    "type":"eSIM",
+    "price":32,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"Europe Orange, 30 Days, 12GB, Unlimited talk, 200 msg",
+    "region":"Europe",
+    "type":"eSIM",
+    "price":20,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"Orange-World Global, 14 Days",
+    "region":"Worldwide",
+    "type":"eSIM",
+    "price":5,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"Thailand, 1 Day, Unlimited data\/day, 10mbps",
+    "region":"Thailand",
+    "type":"eSIM",
+    "price":3,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"Thailand, 3 Days, Unlimited data\/Days, 10mbps",
+    "region":"Thailand",
+    "type":"eSIM",
+    "price":4,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"Thailand, 5 Days, Unlimited data\/Days, 10mbps",
+    "region":"Thailand",
+    "type":"eSIM",
+    "price":6,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"Thailand, 7 Days, Unlimited data\/Days, 10mbps",
+    "region":"Thailand",
+    "type":"eSIM",
+    "price":8,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"Thailand, 10 Days, Unlimited data\/Days, 10mbps",
+    "region":"Thailand",
+    "type":"eSIM",
+    "price":10,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"Thailand, 15 Days, Unlimited data\/Days, 10mbps",
+    "region":"Thailand",
+    "type":"eSIM",
+    "price":16,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"Thailand, 20 Days, Unlimited data\/Days, 10mbps",
+    "region":"Thailand",
+    "type":"eSIM",
+    "price":19,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"Thailand, 30 Days, Unlimited data\/Days, 10mbps",
+    "region":"Thailand",
+    "type":"eSIM",
+    "price":21,
+    "cendPrice":"-",
+    "showed":"N"
+  },
+  {
+    "productName":"TRUE- Travel Asia 399",
+    "region":"Asia",
+    "type":"eSIM",
+    "price":31,
+    "cendPrice":"-",
+    "showed":"N"
+  }
+]
 
 const pageSize = 10;
 
@@ -84,7 +349,6 @@ export default function MyQuotation() {
         <table className="w-full table-auto border text-sm">
           <thead className="bg-gray-100">
             <tr>
-              <th className="border px-2 py-2 text-left border-gray-300">Company</th>
               <th className="border px-2 py-2 text-left border-gray-300">Product Name</th>
               <th className="border px-2 py-2 text-left border-gray-300">Applicable Region</th>
               <th className="border px-2 py-2 text-left border-gray-300">Product Type</th>
@@ -96,7 +360,6 @@ export default function MyQuotation() {
           <tbody>
             {paginated.map((item, index) => (
               <tr key={index} className="border-t">
-                <td className="border px-2 py-2 border-gray-300">{item.company}</td>
                 <td className="border px-2 py-2 border-gray-300">{item.productName}</td>
                 <td className="border px-2 py-2 border-gray-300">{item.region}</td>
                 <td className="border px-2 py-2 border-gray-300">{item.type}</td>

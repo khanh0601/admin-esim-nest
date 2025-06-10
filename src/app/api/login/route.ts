@@ -6,7 +6,7 @@ export async function POST(request: Request) {
   const { email, password } = body;
 
   // ⚠️ Tài khoản cứng
-  if (email === "whitetien@gmail.com" && password === "Admin123123@@") {
+  if (email === "Sim-nest@gmail.com" && password === "Admin123123@@") {
     // Giả lập token
     const response = NextResponse.json({ message: "Login success" });
 

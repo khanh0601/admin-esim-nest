@@ -116,9 +116,9 @@ export default function ListBill() {
         <div className="flex justify-end text-right">
           <div>
             <p className="text-gray-700 font-medium">06/01~06/02 Total Price as below</p>
-            <p className="mt-1">Paid (NT)： <span className="font-bold text-[#5E31F9]">0</span></p>
-            <p>Payable (NT)： <span className="font-bold text-[#5E31F9]">{totalPayable.toLocaleString()}</span></p>
-            <p>Total (NT)： <span className="font-bold text-[#5E31F9]">{totalPayable.toLocaleString()}</span></p>
+            <p className="mt-1">Paid (USD)： <span className="font-bold text-[#5E31F9]">0</span></p>
+            <p>Payable (USD)： <span className="font-bold text-[#5E31F9]">{totalPayable.toLocaleString()}</span></p>
+            <p>Total (USD)： <span className="font-bold text-[#5E31F9]">{totalPayable.toLocaleString()}</span></p>
           </div>
         </div>
       </div>

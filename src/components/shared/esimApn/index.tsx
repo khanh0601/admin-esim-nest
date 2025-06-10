@@ -9,7 +9,7 @@ export default function EsimApnPage() {
               { label: "ESIM APN"}
           ]} />
       <ExcelViewer
-        fileUrl="https://sim-nest.com/wp-content/uploads/2025/06/esim_data.xlsx"
+        fileUrl="https://sim-nest.com/wp-content/uploads/2025/06/APN-list-1.xlsx"
         fileName="esim-apn"
       />
     </div>
