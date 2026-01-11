@@ -1,4 +1,4 @@
-import { EXTERNAL_API_URL } from "@/lib/constants";
+import { API_URL } from "@/lib/constants";
 import type { ApiError, ApiResponse } from "./types";
 
 class ApiClient {
@@ -36,9 +36,23 @@ class ApiClient {
 
     try {
       const response = await fetch(url, config);
-      const data = await response.json();
+      
+      // Parse JSON response
+      let data: any;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        // Nếu parse JSON fail, đọc text thay thế
+        const text = await response.text();
+        const apiError: ApiError = {
+          message: text || "Invalid JSON response from server",
+          status: response.status,
+        };
+        throw apiError;
+      }
 
-      if (!response.ok) {
+      // Check response status và error field trong body
+      if (!response.ok || data.error) {
         const error: ApiError = {
           message: data.error || data.message || "An error occurred",
           status: response.status,
@@ -53,10 +67,12 @@ class ApiClient {
         status: response.status,
       };
     } catch (error) {
-      if (error instanceof Error && "status" in error) {
+      // Nếu đã là ApiError (có status), throw lại
+      if (error && typeof error === "object" && "status" in error) {
         throw error;
       }
       
+      // Xử lý network errors hoặc parsing errors
       const apiError: ApiError = {
         message: error instanceof Error ? error.message : "Network error",
         status: 0,
