@@ -77,16 +77,44 @@ This adjustment helps simplify the structure and improves consistency across API
   const paginated = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   return (
-      <div>
-          <Breadcrumb title="Daily Notice" path={[
-              { label: "Home", href: "/" },
-              { label: "Daily Notice"}
-          ]} />
-          <div className="bg-white p-6 rounded shadow">
-            <SearchBar onSearch={setSearchTerm} onReset={() => setSearchTerm("")} />
-            <NoticeList data={paginated} />
-            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+    <div>
+      <Breadcrumb 
+        title="Daily Notice" 
+        path={[
+          { label: "Home", href: "/admin/notice" },
+          { label: "Daily Notice"}
+        ]} 
+      />
+      <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 mt-6">
+        {/* Search Section */}
+        <div className="mb-6">
+          <SearchBar onSearch={setSearchTerm} onReset={() => setSearchTerm("")} />
+        </div>
+
+        {/* Results Count */}
+        {searchTerm && (
+          <div className="mb-4 text-sm text-gray-600">
+            Found <span className="font-semibold text-gray-900">{filtered.length}</span> notice{filtered.length !== 1 ? 's' : ''}
+            {searchTerm && (
+              <span> for &ldquo;<span className="font-medium">{searchTerm}</span>&rdquo;</span>
+            )}
           </div>
+        )}
+
+        {/* Notice List */}
+        <div className="mb-6">
+          <NoticeList data={paginated} />
+        </div>
+
+        {/* Pagination */}
+        {totalPages > 0 && (
+          <Pagination 
+            currentPage={currentPage} 
+            totalPages={totalPages} 
+            onPageChange={setCurrentPage} 
+          />
+        )}
       </div>
+    </div>
   );
 }

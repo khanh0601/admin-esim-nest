@@ -8,7 +8,9 @@ export default function BillPage() {
                 { label: "Home", href: "/" },
                 { label: "My Bill"}
             ]} />
-            <ListBill />
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+              <ListBill />
+            </div>
         </div>
     );
 }

@@ -12,7 +12,7 @@ export function middleware(req: NextRequest) {
   }
 
   if (isLoggedIn && isAuthPage) {
-    return NextResponse.redirect(new URL("/notice", req.url));
+    return NextResponse.redirect(new URL("/admin/notice", req.url));
   }
 
   return NextResponse.next();

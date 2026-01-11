@@ -21,7 +21,8 @@ class ApiClient {
     // Get token from cookie if available (for client-side)
     if (typeof window !== "undefined") {
       const token = this.getTokenFromCookie();
-      if (token) {
+      // Ensure token is a valid string before using it
+      if (token && typeof token === "string" && token.trim() !== "" && token !== "[object Object]") {
         defaultHeaders["Authorization"] = `Bearer ${token}`;
       }
     }
@@ -38,10 +39,10 @@ class ApiClient {
       const response = await fetch(url, config);
       
       // Parse JSON response
-      let data: any;
+      let data: Record<string, unknown>;
       try {
-        data = await response.json();
-      } catch (parseError) {
+        data = (await response.json()) as Record<string, unknown>;
+      } catch {
         // Nếu parse JSON fail, đọc text thay thế
         const text = await response.text();
         const apiError: ApiError = {
@@ -52,18 +53,21 @@ class ApiClient {
       }
 
       // Check response status và error field trong body
-      if (!response.ok || data.error) {
+      // Support multiple error formats:
+      // Format 1: { error: "...", message: "..." } 
+      // Format 2: { msg: "...", status_code: 401 }
+      if (!response.ok || data.error || data.msg) {
         const error: ApiError = {
-          message: data.error || data.message || "An error occurred",
-          status: response.status,
-          errors: data.errors,
+          message: (data.msg as string) || (data.error as string) || (data.message as string) || "An error occurred",
+          status: (data.status_code as number) || response.status,
+          errors: data.errors as Record<string, string[]> | undefined,
         };
         throw error;
       }
 
       return {
         data: data as T,
-        message: data.message,
+        message: data.message as string | undefined,
         status: response.status,
       };
     } catch (error) {
@@ -87,7 +91,17 @@ class ApiClient {
     const tokenCookie = cookies.find((cookie) =>
       cookie.trim().startsWith("token=")
     );
-    return tokenCookie ? tokenCookie.split("=")[1] : null;
+    if (!tokenCookie) return null;
+    // Use substring to get value after "token=", handle cases where value might contain "="
+    const value = tokenCookie.trim().substring(6); // "token=".length = 6
+    
+    // Ensure value is a string and not empty
+    if (!value || typeof value !== "string") return null;
+    
+    // Handle case where cookie might contain "[object Object]" - return null
+    if (value === "[object Object]") return null;
+    
+    return value;
   }
 
   async get<T>(endpoint: string, options?: RequestInit): Promise<ApiResponse<T>> {

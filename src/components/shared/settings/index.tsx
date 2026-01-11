@@ -5,10 +5,12 @@ export default function SettingPage() {
     return (
         <div>
             <Breadcrumb title="Settings" path={[
-                { label: "Home", href: "/" },
+                { label: "Home", href: "/admin/notice" },
                 { label: "Settings"}
             ]} />
-            <FormSetting />
+            <div className="mt-6">
+                <FormSetting />
+            </div>
         </div>
     );
 }

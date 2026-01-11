@@ -1,4 +1,3 @@
-// app/(admin)/product-list/page.tsx
 "use client";
 import { useState } from "react";
 
@@ -298,105 +297,157 @@ export default function MyQuotation() {
   const totalPages = Math.ceil(filtered.length / pageSize);
   const paginated = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
+  const handleReset = () => {
+    setKeyword("");
+    setRegionFilter("");
+    setTypeFilter("");
+  };
+
   return (
-    <div className="p-6 bg-white shadow rounded">
-      <div className="flex items-center gap-2 mb-4">
-        <input
-          placeholder="Product Name"
-          className="border px-3 py-2 rounded border-gray-300"
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-        />
-        <select
-          className="border px-3 py-2 rounded border-gray-300"
-          value={regionFilter}
-          onChange={(e) => setRegionFilter(e.target.value)}
-        >
-          <option value="">Applicable Region</option>
-          {uniqueRegions.map((region, i) => (
-            <option key={i} value={region}>{region}</option>
-          ))}
-        </select>
-        <select
-          className="border px-3 py-2 rounded border-gray-300"
-          value={typeFilter}
-          onChange={(e) => setTypeFilter(e.target.value)}
-        >
-          <option value="">Product Type</option>
-          {uniqueTypes.map((type, i) => (
-            <option key={i} value={type}>{type}</option>
-          ))}
-        </select>
-        <button className="bg-yellow-500 text-white px-4 py-2 rounded">Search</button>
-        <button
-          className="bg-red-500 text-white px-4 py-2 rounded"
-          onClick={() => {
-            setKeyword("");
-            setRegionFilter("");
-            setTypeFilter("");
-          }}
-        >
-          Reset
-        </button>
+    <div className="p-6">
+      {/* Search Filters */}
+      <div className="mb-6 space-y-4">
+        <div className="flex flex-wrap items-center gap-3">
+          <input
+            placeholder="Product Name"
+            className="px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all flex-1 min-w-[200px]"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && setCurrentPage(1)}
+          />
+          <select
+            className="px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none bg-white"
+            value={regionFilter}
+            onChange={(e) => setRegionFilter(e.target.value)}
+          >
+            <option value="">Applicable Region</option>
+            {uniqueRegions.map((region, i) => (
+              <option key={i} value={region}>{region}</option>
+            ))}
+          </select>
+          <select
+            className="px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none bg-white"
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}
+          >
+            <option value="">Product Type</option>
+            {uniqueTypes.map((type, i) => (
+              <option key={i} value={type}>{type}</option>
+            ))}
+          </select>
+          <button 
+            className="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-medium transition-colors duration-200 shadow-sm hover:shadow-md"
+            onClick={() => setCurrentPage(1)}
+          >
+            Search
+          </button>
+          <button
+            className="px-5 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-medium transition-colors duration-200"
+            onClick={handleReset}
+          >
+            Reset
+          </button>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex gap-3">
+          <button className="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors duration-200 shadow-sm hover:shadow-md flex items-center gap-2">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Download
+          </button>
+          <button className="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors duration-200 shadow-sm hover:shadow-md flex items-center gap-2">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            </svg>
+            Import
+          </button>
+        </div>
       </div>
 
-      <div className="flex gap-2 mb-4">
-        <button className="bg-green-600 text-white px-4 py-2 rounded">Download</button>
-        <button className="bg-green-600 text-white px-4 py-2 rounded">Import</button>
-      </div>
-
-      <div className="overflow-x-auto">
-        <table className="w-full table-auto border text-sm">
-          <thead className="bg-gray-100">
+      {/* Table */}
+      <div className="overflow-x-auto rounded-lg border border-gray-200">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
-              <th className="border px-2 py-2 text-left border-gray-300">Product Name</th>
-              <th className="border px-2 py-2 text-left border-gray-300">Applicable Region</th>
-              <th className="border px-2 py-2 text-left border-gray-300">Product Type</th>
-              <th className="border px-2 py-2 text-left border-gray-300">Price</th>
-              <th className="border px-2 py-2 text-left border-gray-300">C-end Price</th>
-              <th className="border px-2 py-2 text-left border-gray-300">Showed on C-end</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Product Name</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Applicable Region</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Product Type</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Price</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">C-end Price</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Showed on C-end</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="bg-white divide-y divide-gray-200">
             {paginated.map((item, index) => (
-              <tr key={index} className="border-t">
-                <td className="border px-2 py-2 border-gray-300">{item.productName}</td>
-                <td className="border px-2 py-2 border-gray-300">{item.region}</td>
-                <td className="border px-2 py-2 border-gray-300">{item.type}</td>
-                <td className="border px-2 py-2 border-gray-300">{item.price}</td>
-                <td className="border px-2 py-2 border-gray-300">{item.cendPrice}</td>
-                <td className="border px-2 py-2 border-gray-300">{item.showed}</td>
+              <tr key={index} className="hover:bg-gray-50 transition-colors duration-150">
+                <td className="px-4 py-3 text-gray-900 font-medium">{item.productName}</td>
+                <td className="px-4 py-3 text-gray-600">{item.region}</td>
+                <td className="px-4 py-3 text-gray-600">{item.type}</td>
+                <td className="px-4 py-3 text-gray-700 font-semibold">${item.price}</td>
+                <td className="px-4 py-3 text-gray-600">{item.cendPrice}</td>
+                <td className="px-4 py-3">
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                    item.showed === 'Y' 
+                      ? 'bg-green-100 text-green-800' 
+                      : 'bg-gray-100 text-gray-800'
+                  }`}>
+                    {item.showed}
+                  </span>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      <div className="flex justify-between items-center mt-4">
+      {/* Pagination */}
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-6 pt-6 border-t border-gray-200">
         <span className="text-sm text-gray-600">
-          Showing {1 + (currentPage - 1) * pageSize} to {Math.min(currentPage * pageSize, filtered.length)} of {filtered.length} entries
+          Showing <span className="font-semibold text-gray-900">{1 + (currentPage - 1) * pageSize}</span> to{" "}
+          <span className="font-semibold text-gray-900">{Math.min(currentPage * pageSize, filtered.length)}</span> of{" "}
+          <span className="font-semibold text-gray-900">{filtered.length}</span> entries
         </span>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            className="px-3 py-1 border rounded"
             disabled={currentPage === 1}
+            className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 font-medium"
           >
             Previous
           </button>
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrentPage(i + 1)}
-              className={`px-3 py-1 border rounded ${currentPage === i + 1 ? "bg-teal-500 text-white" : ""}`}
-            >
-              {i + 1}
-            </button>
-          ))}
+          <div className="flex gap-1">
+            {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+              let pageNum;
+              if (totalPages <= 5) {
+                pageNum = i + 1;
+              } else if (currentPage <= 3) {
+                pageNum = i + 1;
+              } else if (currentPage >= totalPages - 2) {
+                pageNum = totalPages - 4 + i;
+              } else {
+                pageNum = currentPage - 2 + i;
+              }
+              return (
+                <button
+                  key={i}
+                  onClick={() => setCurrentPage(pageNum)}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
+                    currentPage === pageNum
+                      ? "bg-teal-600 text-white shadow-sm"
+                      : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+          </div>
           <button
             onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-            className="px-3 py-1 border rounded"
             disabled={currentPage === totalPages}
+            className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 font-medium shadow-sm hover:shadow-md"
           >
             Next
           </button>

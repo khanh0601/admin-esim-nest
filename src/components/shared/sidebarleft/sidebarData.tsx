@@ -1,40 +1,43 @@
 export const sidebarData = [
   {
-    title: "System",
+    title: "Important Notice",
     icon: "📢",
-    children: [
-      { title: "Important Notice", href: "/admin/notice" },
-      { title: "Daily Notice", href: "/admin/announce" },
-      { title: "ESIM APN", href: "/admin/esim-apn" },
-    ],
+    href: "/admin/notice",
   },
   {
-    title: "Quotation System",
+    title: "Daily Notice",
+    icon: "📢",
+    href: "/admin/announce",
+  },
+  {
+    title: "ESIM APN",
+    icon: "📢",
+    href: "/admin/esim-apn",
+  },
+  {
+    title: "Register Account",
+    icon: "📢",
+    href: "/admin/register",
+  },
+  {
+    title: "Products",
     icon: "📄",
-    children: [
-      { title: "My quotation", href: "/admin/quotation" },
-    ],
+    href: "/admin/quotation",
   },
   {
-    title: "Billing System",
+    title: "My Bill",
     icon: "🧾",
-    children: [
-      { title: "My Bill", href: "/admin/my-bill" },
-    ],
+    href: "/admin/my-bill",
   },
   {
-    title: "Shipping System",
+    title: "My Order",
     icon: "📦",
-    children: [
-      { title: "My Order", href: "/admin/my-order" },
-    ],
+    href: "/admin/my-order",
   },
   {
-    title: "Return Management",
+    title: "Return Order",
     icon: "↩️",
-    children: [
-      { title: "Return Order", href: "/admin/return-order" },
-    ],
+    href: "/admin/return-order",
   },
   {
     title: "Settings",

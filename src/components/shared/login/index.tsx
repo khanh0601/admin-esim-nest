@@ -3,14 +3,13 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Image from "next/image";
-// import { API_URL } from "@/lib/constants"; // Tạm thời comment khi dùng mock
 import { useAuthStore } from "@/lib/stores";
+import { authApi } from "@/lib/api";
 import type { ApiError } from "@/lib/api/types";
-// import type { LoginResponse } from "@/lib/api/types"; // Tạm thời comment khi dùng mock
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
+  const [account, setAccount] = useState("");
   const [password, setPassword] = useState("");
   
   // Zustand store
@@ -22,63 +21,30 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // ⚠️ TẠM THỜI: Mock login - xóa phần này khi có API thật
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API delay
-
-      // Mock login - BẤT KỲ email/password nào cũng login được
-      // Ví dụ:
-      // - Email: admin@example.com / Password: bất kỳ
-      // - Email: test@test.com / Password: 123456
-      // - Email: user@gmail.com / Password: password
-      // Hoặc bất kỳ email/password nào khác đều được!
-      
-      const mockToken = "mock-token-" + Date.now();
-      const mockUser = {
-        id: "1",
-        email: email,
-        name: email.split("@")[0], // Lấy phần trước @ làm name
-      };
+      // Gọi API login qua authApi service
+      const data = await authApi.login({ account, password });
 
       // Lưu vào store (store sẽ tự động set cookie)
-      login(mockToken, mockUser);
+      // authApi.login() đã normalize token thành string
+      const token = typeof data.token === "string" ? data.token : null;
       
-      // Login thành công - redirect
-      router.push("/admin/notice");
-
-      // ⚠️ CODE GỐC (gọi API thật) - uncomment khi có API:
-      /*
-      const response = await fetch(`${API_URL}/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data: LoginResponse = await response.json();
-
-      if (!response.ok) {
-        throw {
-          message: data.error || data.message || "Sai tài khoản hoặc mật khẩu",
-          status: response.status,
-        } as ApiError;
-      }
-
-      if (data.token && data.user) {
-        login(data.token, data.user);
+      if (token && data.user) {
+        login(token, data.refreshToken || null, data.user);
         router.push("/admin/notice");
-      } else if (data.token) {
-        login(data.token, {
+      } else if (token) {
+        login(token, data.refreshToken || null, {
           id: "",
-          email: email,
+          email: account,
         });
         router.push("/admin/notice");
+      } else {
+        setError("Invalid response from server");
       }
-      */
     } catch (err) {
+      console.error(err);
       const apiError = err as ApiError;
       setError(
-        apiError.message || "Sai tài khoản hoặc mật khẩu. Vui lòng thử lại."
+        apiError.message || "Incorrect account or password. Please try again."
       );
     } finally {
       setLoading(false);
@@ -99,8 +65,8 @@ export default function LoginPage() {
               className="h-16 w-auto"
             />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Chào mừng trở lại</h1>
-          <p className="text-gray-600">Đăng nhập vào tài khoản của bạn</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back</h1>
+          <p className="text-gray-600">Sign in to your account</p>
         </div>
 
         {/* Login Card */}
@@ -116,23 +82,23 @@ export default function LoginPage() {
               </div>
             )}
 
-            {/* Email Input */}
+            {/* Account Input */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email
+              <label htmlFor="account" className="block text-sm font-medium text-gray-700 mb-2">
+                Account
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                 </div>
                 <input
-                  id="email"
-                  type="email"
-                  placeholder="Nhập email của bạn"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  id="account"
+                  type="text"
+                  placeholder="Enter your account"
+                  value={account}
+                  onChange={(e) => setAccount(e.target.value)}
                   required
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all duration-200 text-gray-900 placeholder-gray-400"
                 />
@@ -142,7 +108,7 @@ export default function LoginPage() {
             {/* Password Input */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Mật khẩu
+                Password
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -153,7 +119,7 @@ export default function LoginPage() {
                 <input
                   id="password"
                   type="password"
-                  placeholder="Nhập mật khẩu của bạn"
+                  placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -174,10 +140,10 @@ export default function LoginPage() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Đang đăng nhập...
+                  Signing in...
                 </span>
               ) : (
-                "Đăng nhập"
+                "Sign In"
               )}
             </button>
           </form>
