@@ -53,14 +53,8 @@ export const authApi = {
    * @returns Register response với token
    */
   register: async (data: RegisterRequest): Promise<RegisterResponse> => {
-    const response = await apiClient.post<RegisterResponse>("/user/register", data);
+    const response = await apiClient.post<RegisterResponse>("/user/create_user", data);
     const result = response.data as RegisterResponse;
-    
-    // Normalize token: handle nested object format { token: { Token: "..." } }
-    if (result.token && typeof result.token === "object" && "Token" in result.token) {
-      result.token = result.token.Token as string;
-    }
-    
     return result;
   },
 };

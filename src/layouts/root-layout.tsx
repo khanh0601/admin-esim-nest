@@ -11,7 +11,7 @@ export default function RootLayout({
             <Header />
             <div className="flex wrapper h-full mt-19 ">
                 <SidebarLeft />
-                <main className="wrapper flex-1 px-14  pb-10 ">{children}</main>
+                <main className="wrapper flex-1 px-14 overflow-hidden pb-10 ">{children}</main>
             </div>
         </div>
     );

@@ -7,12 +7,14 @@ interface User {
   id: string;
   email: string;
   name?: string;
+  role?: number;
 }
 
 interface AuthState {
   token: string | null;
   refreshToken: string | null;
   user: User | null;
+  role: number | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
@@ -21,7 +23,8 @@ interface AuthState {
   setToken: (token: string) => void;
   setRefreshToken: (refreshToken: string) => void;
   setUser: (user: User) => void;
-  login: (token: string, refreshToken: string | null, user: User) => void;
+  setRole: (role: number) => void;
+  login: (token: string, refreshToken: string | null, user: User, role?: number) => void;
   logout: () => void;
   refreshAccessToken: () => Promise<void>;
   setLoading: (isLoading: boolean) => void;
@@ -35,6 +38,7 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       refreshToken: null,
       user: null,
+      role: null,
       isAuthenticated: false,
       isLoading: false,
       error: null,
@@ -55,16 +59,26 @@ export const useAuthStore = create<AuthState>()(
         set({ user });
       },
 
-      login: (token: string, refreshToken: string | null, user: User) => {
+      setRole: (role: number) => {
+        // Set role vào cookie để middleware có thể đọc
+        document.cookie = `role=${role}; path=/; max-age=86400; SameSite=Lax${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
+        set({ role });
+      },
+
+      login: (token: string, refreshToken: string | null, user: User, role?: number) => {
         // Set token vào cookie
         document.cookie = `token=${token}; path=/; max-age=86400; SameSite=Lax${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
         if (refreshToken) {
           document.cookie = `refreshToken=${refreshToken}; path=/; max-age=604800; SameSite=Lax${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
         }
+        if (role !== undefined) {
+          document.cookie = `role=${role}; path=/; max-age=86400; SameSite=Lax${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
+        }
         set({
           token,
           refreshToken,
-          user,
+          user: { ...user, role },
+          role: role ?? null,
           isAuthenticated: true,
           error: null,
         });
@@ -74,10 +88,12 @@ export const useAuthStore = create<AuthState>()(
         // Xóa cookies
         document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
         document.cookie = "refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        document.cookie = "role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
         set({
           token: null,
           refreshToken: null,
           user: null,
+          role: null,
           isAuthenticated: false,
           error: null,
         });
@@ -157,6 +173,7 @@ export const useAuthStore = create<AuthState>()(
         token: state.token,
         refreshToken: state.refreshToken,
         user: state.user,
+        role: state.role,
         isAuthenticated: state.isAuthenticated,
       }),
     }

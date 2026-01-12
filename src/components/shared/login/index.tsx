@@ -27,16 +27,27 @@ export default function LoginPage() {
       // Lưu vào store (store sẽ tự động set cookie)
       // authApi.login() đã normalize token thành string
       const token = typeof data.token === "string" ? data.token : null;
-      
+      const role = data.role ?? 0; // Default role = 0 nếu không có
+      console.log(role);
       if (token && data.user) {
-        login(token, data.refreshToken || null, data.user);
-        router.push("/admin/notice");
+        login(token, data.refreshToken || null, data.user, role);
+        // Redirect dựa trên role: role=1 không vào /admin/notice
+        if (role === 1) {
+          router.push("/admin/announce");
+        } else {
+          router.push("/admin/notice");
+        }
       } else if (token) {
         login(token, data.refreshToken || null, {
           id: "",
           email: account,
-        });
-        router.push("/admin/notice");
+        }, role);
+        // Redirect dựa trên role: role=1 không vào /admin/notice
+        if (role === 1) {
+          router.push("/admin/announce");
+        } else {
+          router.push("/admin/notice");
+        }
       } else {
         setError("Invalid response from server");
       }

@@ -57,7 +57,6 @@ export default function RegisterPage() {
         last_name: lastName || undefined,
       });
 
-      // Admin đang tạo tài khoản cho user, chỉ thông báo và reset form
       setSuccess(data.message || "Account created successfully!");
       
       // Reset form after successful registration

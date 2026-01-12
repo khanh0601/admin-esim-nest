@@ -16,13 +16,13 @@ export const sidebarData = [
   },
   {
     title: "Register Account",
-    icon: "📢",
+    icon: "👤",
     href: "/admin/register",
   },
   {
     title: "Products",
     icon: "📄",
-    href: "/admin/quotation",
+    href: "/admin/products",
   },
   {
     title: "My Bill",

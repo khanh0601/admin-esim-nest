@@ -23,6 +23,7 @@ export interface LoginResponse {
   error?: string;
   token?: string | { Token?: string };
   refreshToken?: string;
+  role?: number;
   user?: {
     id: string;
     email: string;
@@ -94,3 +95,50 @@ export interface UpdateProfileResponse {
   data?: UserProfile;
 }
 
+// Product Types
+export interface Product {
+  supplier: string;
+  product_code: string;
+  product_type: string;
+  product_name_vi: string;
+  product_name_en: string;
+  sale_price: number;
+  days: number;
+  plan_type: number;
+  data: string;
+  network_types: string;
+  coverage_area_en: string;
+  coverage_area_vi: string;
+  telecommunication_providers: string;
+  notification_en: string;
+  notification_vi: string;
+  data_reset_date_reset_en: string;
+  data_reset_date_reset_vi: string;
+  prepaid_card: string;
+  apn: string;
+  roaming_carrier: string;
+  sms: number;
+  receive: number;
+  call: number;
+  tiktok: number;
+  chat_gpt: number;
+}
+
+export interface SearchProductsRequest {
+  product_name?: string;
+  product_code?: string;
+  coverage_area?: string;
+  plan_type?: number;
+  product_type?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface SearchProductsResponse {
+  data?: Product[];
+  total?: number;
+  page?: number;
+  limit?: number;
+  message?: string;
+  error?: string;
+}
