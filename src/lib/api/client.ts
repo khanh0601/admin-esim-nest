@@ -73,7 +73,7 @@ class ApiClient {
           await this.refreshToken();
           // Retry request với token mới
           return this.request<T>(endpoint, options, retryCount + 1);
-        } catch (refreshError) {
+        } catch {
           // Nếu refresh fail, throw error
           const error: ApiError = {
             message: "Session expired. Please login again.",
@@ -123,7 +123,6 @@ class ApiClient {
       try {
         // Dynamic import để tránh circular dependency
         const { useAuthStore } = await import("@/lib/stores");
-        const { authApi } = await import("./auth");
         
         // Gọi API refresh token (không qua apiClient để tránh vòng lặp)
         // Gọi trực tiếp fetch để tránh interceptor
@@ -243,9 +242,9 @@ class ApiClient {
     }
     
     // Merge headers: nếu là FormData, loại bỏ Content-Type từ options.headers
-    const mergedHeaders: HeadersInit = { ...customHeaders };
+    const mergedHeaders: Record<string, string> = { ...customHeaders } as Record<string, string>;
     if (options?.headers) {
-      const optionsHeaders = options.headers as HeadersInit;
+      const optionsHeaders = options.headers as Record<string, string>;
       Object.keys(optionsHeaders).forEach((key) => {
         // Bỏ qua Content-Type nếu body là FormData
         if (isFormData && key.toLowerCase() === "content-type") {
