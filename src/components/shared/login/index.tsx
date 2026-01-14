@@ -23,33 +23,37 @@ export default function LoginPage() {
     try {
       // Gọi API login qua authApi service
       const data = await authApi.login({ account, password });
+      
+      // Kiểm tra nếu có error trong response
+      if (data.error) {
+        setError(data.error || "Login failed");
+        return;
+      }
 
-      // Lưu vào store (store sẽ tự động set cookie)
-      // authApi.login() đã normalize token thành string
       const token = typeof data.token === "string" ? data.token : null;
-      const role = data.role ?? 0; // Default role = 0 nếu không có
-      console.log(role);
-      if (token && data.user) {
+      const role = data.role ?? 0;
+      
+      if (!token) {
+        setError(data.message || data.error || "Invalid response from server. No token received.");
+        return;
+      }
+
+      // Nếu có user info từ API
+      if (data.user) {
         login(token, data.refreshToken || null, data.user, role);
-        // Redirect dựa trên role: role=1 không vào /admin/notice
-        if (role === 1) {
-          router.push("/admin/announce");
-        } else {
-          router.push("/admin/notice");
-        }
-      } else if (token) {
+      } else {
+        // Fallback: tạo user object từ account
         login(token, data.refreshToken || null, {
           id: "",
           email: account,
         }, role);
-        // Redirect dựa trên role: role=1 không vào /admin/notice
-        if (role === 1) {
-          router.push("/admin/announce");
-        } else {
-          router.push("/admin/notice");
-        }
+      }
+
+      // Redirect dựa trên role: role=1 không vào /admin/notice
+      if (role === 1) {
+        router.push("/admin/announce");
       } else {
-        setError("Invalid response from server");
+        router.push("/admin/notice");
       }
     } catch (err) {
       console.error(err);

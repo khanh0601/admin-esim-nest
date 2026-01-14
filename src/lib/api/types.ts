@@ -97,6 +97,7 @@ export interface UpdateProfileResponse {
 
 // Product Types
 export interface Product {
+  id?: number | string; // ID của product (optional, có thể là number hoặc string)
   supplier: string;
   product_code: string;
   product_type: string;
@@ -139,6 +140,34 @@ export interface SearchProductsResponse {
   total?: number;
   page?: number;
   limit?: number;
+  message?: string;
+  error?: string;
+}
+
+export interface GetProductsRequest {
+  limit?: number;
+  page?: number;
+  sort?: "asc" | "desc";
+  name?: string;
+  day?: number;
+  plan_type?: number;
+  product_type?: string;
+  coverage?: string;
+}
+
+export interface GetProductsResponse {
+  data?: Product[];
+  total?: number;
+  page?: number;
+  limit?: number;
+  message?: string;
+  error?: string;
+}
+
+export interface ListCoverageResponse {
+  data?: Array<{
+    coverage_area_vi: string | null;
+  }>;
   message?: string;
   error?: string;
 }

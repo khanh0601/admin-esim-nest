@@ -8,15 +8,29 @@ export const authApi = {
    * @returns Login response với token
    */
   login: async (credentials: LoginRequest): Promise<LoginResponse> => {
-    const response = await apiClient.post<LoginResponse>("/user/login", credentials);
-    const data = response.data as LoginResponse;
+    const response = await apiClient.post<{ data?: { access_token?: string; refresh_token?: string; user?: { id: number; email: string; role: number } } }>("/user/login", credentials);
     
-    // Normalize token: handle nested object format { token: { Token: "..." } }
-    if (data.token && typeof data.token === "object" && "Token" in data.token) {
-      data.token = data.token.Token as string;
+    // API trả về format: { data: { access_token, refresh_token, user } }
+    const apiData = response.data?.data;
+    
+    if (!apiData) {
+      return {
+        error: "Invalid response format from server",
+      };
     }
+
+    // Map API response sang LoginResponse format
+    const loginResponse: LoginResponse = {
+      token: apiData.access_token,
+      refreshToken: apiData.refresh_token,
+      role: apiData.user?.role,
+      user: apiData.user ? {
+        id: String(apiData.user.id), // Convert number to string
+        email: apiData.user.email,
+      } : undefined,
+    };
     
-    return data;
+    return loginResponse;
   },
 
   /**
@@ -43,7 +57,8 @@ export const authApi = {
    * Refresh token
    */
   refreshToken: async () => {
-    const response = await apiClient.post("/refresh-token");
+    // Thay đổi endpoint ở đây: "/refresh-token" → endpoint của bạn
+    const response = await apiClient.post("/user/get_access_token");
     return response.data;
   },
 

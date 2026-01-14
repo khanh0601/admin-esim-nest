@@ -1,7 +1,5 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { API_URL } from "@/lib/constants";
-import type { RefreshTokenResponse } from "../api/types";
 
 interface User {
   id: string;
@@ -50,9 +48,9 @@ export const useAuthStore = create<AuthState>()(
       },
 
       setRefreshToken: (refreshToken: string) => {
-        // Set refreshToken vào cookie
+        // Set refreshToken vào cookie (KHÔNG lưu vào state để tránh localStorage)
         document.cookie = `refreshToken=${refreshToken}; path=/; max-age=604800; SameSite=Lax${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
-        set({ refreshToken });
+        // Không set vào state để tránh persist vào localStorage
       },
 
       setUser: (user: User) => {
@@ -69,6 +67,7 @@ export const useAuthStore = create<AuthState>()(
         // Set token vào cookie
         document.cookie = `token=${token}; path=/; max-age=86400; SameSite=Lax${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
         if (refreshToken) {
+          // Set refreshToken vào cookie (KHÔNG lưu vào state để tránh localStorage)
           document.cookie = `refreshToken=${refreshToken}; path=/; max-age=604800; SameSite=Lax${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
         }
         if (role !== undefined) {
@@ -76,7 +75,7 @@ export const useAuthStore = create<AuthState>()(
         }
         set({
           token,
-          refreshToken,
+          // refreshToken không set vào state để tránh persist vào localStorage
           user: { ...user, role },
           role: role ?? null,
           isAuthenticated: true,
@@ -100,8 +99,9 @@ export const useAuthStore = create<AuthState>()(
       },
 
       refreshAccessToken: async () => {
-        const state = useAuthStore.getState();
-        if (!state.refreshToken) {
+        // Đọc refreshToken từ cookie (không từ state để tránh localStorage)
+        const refreshToken = getRefreshTokenFromCookie();
+        if (!refreshToken) {
           throw new Error("No refresh token available");
         }
 
@@ -113,13 +113,14 @@ export const useAuthStore = create<AuthState>()(
           const newToken = "refreshed-token-" + Date.now();
           const newRefreshToken = "refresh-token-" + Date.now();
           
-          // Set new tokens
+          // Set new tokens vào cookie
           document.cookie = `token=${newToken}; path=/; max-age=86400; SameSite=Lax${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
           document.cookie = `refreshToken=${newRefreshToken}; path=/; max-age=604800; SameSite=Lax${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
           
+          // Chỉ set token vào state (không set refreshToken để tránh localStorage)
           set({
             token: newToken,
-            refreshToken: newRefreshToken,
+            isAuthenticated: true,
           });
 
           // ⚠️ CODE GỐC (gọi API thật) - uncomment khi có API:
@@ -129,7 +130,7 @@ export const useAuthStore = create<AuthState>()(
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ refreshToken: state.refreshToken }),
+            body: JSON.stringify({ refreshToken }),
           });
 
           const data: RefreshTokenResponse = await response.json();
@@ -140,16 +141,17 @@ export const useAuthStore = create<AuthState>()(
 
           if (data.token) {
             document.cookie = `token=${data.token}; path=/; max-age=86400; SameSite=Lax${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
-            set({ token: data.token });
+            set({ token: data.token, isAuthenticated: true });
           }
 
           if (data.refreshToken) {
+            // Chỉ lưu refreshToken vào cookie, không vào state
             document.cookie = `refreshToken=${data.refreshToken}; path=/; max-age=604800; SameSite=Lax${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
-            set({ refreshToken: data.refreshToken });
           }
           */
         } catch (error) {
           // Nếu refresh token fail, logout user
+          const state = useAuthStore.getState();
           state.logout();
           throw error;
         }
@@ -170,13 +172,29 @@ export const useAuthStore = create<AuthState>()(
     {
       name: "auth-storage",
       partialize: (state) => ({
+        // CHỈ persist những thứ cần thiết, KHÔNG persist refreshToken để tránh localStorage
         token: state.token,
-        refreshToken: state.refreshToken,
         user: state.user,
         role: state.role,
         isAuthenticated: state.isAuthenticated,
+        // refreshToken KHÔNG được persist - chỉ lưu trong cookie
       }),
     }
   )
 );
+
+/**
+ * Helper function để đọc refreshToken từ cookie
+ * RefreshToken chỉ được lưu trong cookie, không lưu trong localStorage
+ */
+function getRefreshTokenFromCookie(): string | null {
+  if (typeof document === "undefined") return null;
+  const cookies = document.cookie.split(";");
+  const refreshTokenCookie = cookies.find((cookie) =>
+    cookie.trim().startsWith("refreshToken=")
+  );
+  if (!refreshTokenCookie) return null;
+  const value = refreshTokenCookie.trim().substring(13); // "refreshToken=".length = 13
+  return value || null;
+}
 
