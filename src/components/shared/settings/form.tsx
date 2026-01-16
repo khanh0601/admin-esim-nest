@@ -9,10 +9,10 @@ export default function FormSetting() {
     email: '',
     firstName: '',
     lastName: '',
-    redeemCallbackUrl: '',
     esimOrderCallbackUrl: '',
     topupCallbackUrl: '',
   })
+  const [token, setToken] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -27,11 +27,11 @@ export default function FormSetting() {
         const response = await userApi.getProfile()
         
         if (response.data) {
+          setToken(response.data.token || '')
           setFormData({
             email: response.data.email || '',
             firstName: response.data.first_name || '',
             lastName: response.data.last_name || '',
-            redeemCallbackUrl: response.data.redeem_call_back_url || '',
             esimOrderCallbackUrl: response.data.order_call_back_url || '',
             topupCallbackUrl: response.data.top_up_call_back_url || '',
           })
@@ -65,7 +65,6 @@ export default function FormSetting() {
     try {
       // Note: email is not included because it's readonly and cannot be updated
       const updateData = {
-        redeem_call_back_url: formData.redeemCallbackUrl || undefined,
         order_call_back_url: formData.esimOrderCallbackUrl || undefined,
         top_up_call_back_url: formData.topupCallbackUrl || undefined,
         first_name: formData.firstName || undefined,
@@ -170,6 +169,16 @@ export default function FormSetting() {
             readOnly
           />
 
+          {/* Token - Readonly */}
+          <Input
+            label="Token"
+            name="token"
+            value={token}
+            onChange={() => {}} // No-op since it's readonly
+            placeholder="Token"
+            readOnly
+          />
+
           {/* First Name and Last Name - Editable */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Input
@@ -189,13 +198,6 @@ export default function FormSetting() {
           </div>
 
           {/* Callback URLs */}
-          <Input
-            label="Redeem Redemption Code Callback URL"
-            name="redeemCallbackUrl"
-            value={formData.redeemCallbackUrl}
-            onChange={handleChange}
-            placeholder="Enter redeem callback URL"
-          />
           <Input
             label="eSIM Order Callback URL"
             name="esimOrderCallbackUrl"

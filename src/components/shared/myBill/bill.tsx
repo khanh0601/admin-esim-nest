@@ -2,15 +2,15 @@
 "use client";
 import { useState } from "react";
 
-const mockOrders = Array.from({ length: 53 }, (_, i) => ({
-  orderNumber: `b00005225060200${i + 1}`,
-  orderDate: `2025/06/02 03:${String(40 - i % 40).padStart(2, '0')}:21`,
-  totalPrice: i % 3 === 0 ? 1904 : 2856,
-  orderType: "create by company",
-  receivedType: "Receivable",
-  status: "Success",
-  lastHistory: `Shipped 2025/06/02 03:${String(40 - i % 40).padStart(2, '0')}:21`
-}));
+const mockOrders: Array<{
+  orderNumber: string;
+  orderDate: string;
+  totalPrice: number;
+  orderType: string;
+  receivedType: string;
+  status: string;
+  lastHistory: string;
+}> = [];
 
 const pageSize = 10;
 
@@ -100,23 +100,31 @@ export default function ListBill() {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {paginated.map((order, index) => (
-              <tr key={index} className="hover:bg-gray-50 transition-colors duration-150">
-                <td className="px-4 py-3 text-teal-600 font-medium cursor-pointer hover:text-teal-700 hover:underline">
-                  {order.orderNumber}
+            {paginated.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
+                  Không có dữ liệu
                 </td>
-                <td className="px-4 py-3 text-gray-700">{order.orderDate}</td>
-                <td className="px-4 py-3 text-gray-700 font-medium">${order.totalPrice.toLocaleString()}</td>
-                <td className="px-4 py-3 text-gray-600">{order.orderType}</td>
-                <td className="px-4 py-3 text-gray-600">{order.receivedType}</td>
-                <td className="px-4 py-3">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    {order.status}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-gray-600">{order.lastHistory}</td>
               </tr>
-            ))}
+            ) : (
+              paginated.map((order, index) => (
+                <tr key={index} className="hover:bg-gray-50 transition-colors duration-150">
+                  <td className="px-4 py-3 text-teal-600 font-medium cursor-pointer hover:text-teal-700 hover:underline">
+                    {order.orderNumber}
+                  </td>
+                  <td className="px-4 py-3 text-gray-700">{order.orderDate}</td>
+                  <td className="px-4 py-3 text-gray-700 font-medium">${order.totalPrice.toLocaleString()}</td>
+                  <td className="px-4 py-3 text-gray-600">{order.orderType}</td>
+                  <td className="px-4 py-3 text-gray-600">{order.receivedType}</td>
+                  <td className="px-4 py-3">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      {order.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-gray-600">{order.lastHistory}</td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

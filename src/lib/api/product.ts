@@ -1,5 +1,5 @@
 import { apiClient } from "./client";
-import type { SearchProductsRequest, SearchProductsResponse, GetProductsRequest, GetProductsResponse, Product, ListCoverageResponse } from "./types";
+import type { SearchProductsRequest, SearchProductsResponse, GetProductsRequest, GetProductsResponse, Product, ListCoverageResponse, CreateOrderRequest, CreateOrderResponse, CreateTopUpSimOrderRequest, CreateTopUpSimOrderResponse, ListOrdersRequest, ListOrdersResponse } from "./types";
 
 export const productApi = {
   /**
@@ -93,5 +93,42 @@ export const productApi = {
       formData
     );
     return response.data ?? {};
+  },
+
+  /**
+   * Tạo đơn hàng (mua hàng) cho eSIM
+   * @param orderData - Thông tin đơn hàng (email và danh sách sản phẩm)
+   * @returns Response với thông báo
+   */
+  order: async (orderData: CreateOrderRequest): Promise<CreateOrderResponse> => {
+    const response = await apiClient.post<CreateOrderResponse>("/esim/order_item_web", orderData);
+    return response.data ?? {};
+  },
+
+  /**
+   * Tạo đơn hàng (mua hàng) cho Top-Up SIM
+   * @param orderData - Thông tin đơn hàng (email và danh sách sản phẩm với simNum)
+   * @returns Response với thông báo
+   */
+  orderTopUpSim: async (orderData: CreateTopUpSimOrderRequest): Promise<CreateTopUpSimOrderResponse> => {
+    const response = await apiClient.post<CreateTopUpSimOrderResponse>("/card_esim/order_web", orderData);
+    return response.data ?? {};
+  },
+
+  /**
+   * Lấy danh sách orders
+   * @param params - Query parameters (limit, page, sort)
+   * @returns Response với danh sách orders
+   */
+  listOrders: async (params: ListOrdersRequest = {}): Promise<ListOrdersResponse> => {
+    const { limit = 10, page = 1, sort = "desc" } = params;
+    const queryParams = new URLSearchParams({
+      limit: limit.toString(),
+      page: page.toString(),
+      sort: sort,
+    });
+    
+    const response = await apiClient.get<ListOrdersResponse>(`/esim/list_order?${queryParams.toString()}`);
+    return response.data as ListOrdersResponse;
   },
 };

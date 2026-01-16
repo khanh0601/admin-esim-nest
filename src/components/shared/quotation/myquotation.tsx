@@ -1,7 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { useAuthStore, useCartStore } from "@/lib/stores";
-import { productApi } from "@/lib/api";
+import { productApi, userApi } from "@/lib/api";
 import type { Product, ApiError } from "@/lib/api/types";
 import toast from "react-hot-toast";
 
@@ -29,7 +29,13 @@ const formatBoolean = (value: number): string => {
 // Cart Button Component
 function CartButton() {
   const { openCart, getTotalItems } = useCartStore();
-  const totalItems = getTotalItems();
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const totalItems = mounted ? getTotalItems() : 0;
 
   return (
     <button 
@@ -40,7 +46,7 @@ function CartButton() {
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
       </svg>
       Cart
-      {totalItems > 0 && (
+      {mounted && totalItems > 0 && (
         <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
           {totalItems}
         </span>
@@ -52,6 +58,209 @@ function CartButton() {
 // Cart Sidebar Component
 function CartSidebar() {
   const { isOpen, items, closeCart, removeItem, updateQuantity, clearCart, getTotalPrice } = useCartStore();
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [email, setEmail] = useState<string>("");
+  const [emailError, setEmailError] = useState<string>("");
+  const [showSimNumModal, setShowSimNumModal] = useState(false);
+  const [simNums, setSimNums] = useState<Record<string, string[]>>({});
+  const [simNumErrors, setSimNumErrors] = useState<Record<string, string>>({});
+
+  // Load user email as default when opening email modal
+  useEffect(() => {
+    const loadUserEmail = async () => {
+      if (showEmailModal) {
+        try {
+          const response = await userApi.getProfile();
+          if (response.data?.email && !email) {
+            setEmail(response.data.email);
+          }
+        } catch (error) {
+          console.error("Failed to load user email:", error);
+        }
+      }
+    };
+    
+    loadUserEmail();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showEmailModal]);
+
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleOpenEmailModal = () => {
+    if (items.length === 0) {
+      toast.error("Giỏ hàng trống!");
+      return;
+    }
+    
+    // Kiểm tra xem có sản phẩm Top-Up SIM không
+    const topUpSimItems = items.filter(item => item.product_type === "Top-Up SIM");
+    
+    if (topUpSimItems.length > 0) {
+      // Nếu có Top-Up SIM, hiển thị popup nhập simNum trước
+      const initialSimNums: Record<string, string[]> = {};
+      topUpSimItems.forEach(item => {
+        if (item.id) {
+          initialSimNums[String(item.id)] = Array(item.quantity).fill("");
+        }
+      });
+      setSimNums(initialSimNums);
+      setSimNumErrors({});
+      setShowSimNumModal(true);
+    } else {
+      // Nếu không có Top-Up SIM, mở email modal trực tiếp
+      setShowEmailModal(true);
+      setEmailError("");
+    }
+  };
+
+  const handleCloseEmailModal = () => {
+    setShowEmailModal(false);
+    setEmail("");
+    setEmailError("");
+    // Reset simNums khi đóng email modal
+    handleCloseSimNumModal();
+  };
+
+  const handleCloseSimNumModal = () => {
+    setShowSimNumModal(false);
+    setSimNums({});
+    setSimNumErrors({});
+  };
+
+  const handleSimNumChange = (productId: string, index: number, value: string) => {
+    setSimNums(prev => ({
+      ...prev,
+      [productId]: prev[productId]?.map((simNum, i) => i === index ? value : simNum) || []
+    }));
+    // Clear error when user types
+    if (simNumErrors[`${productId}_${index}`]) {
+      setSimNumErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[`${productId}_${index}`];
+        return newErrors;
+      });
+    }
+  };
+
+  const handleConfirmSimNums = () => {
+    // Validate all simNums are filled
+    const errors: Record<string, string> = {};
+    let hasError = false;
+
+    Object.keys(simNums).forEach(productId => {
+      simNums[productId].forEach((simNum, index) => {
+        if (!simNum.trim()) {
+          errors[`${productId}_${index}`] = "Vui lòng nhập số SIM!";
+          hasError = true;
+        }
+      });
+    });
+
+    if (hasError) {
+      setSimNumErrors(errors);
+      return;
+    }
+
+    // All valid, close simNum modal and open email modal
+    setShowSimNumModal(false);
+    setShowEmailModal(true);
+    setEmailError("");
+  };
+
+  const handleCheckout = async () => {
+    // Validate email
+    if (!email.trim()) {
+      setEmailError("Vui lòng nhập email!");
+      return;
+    }
+
+    if (!validateEmail(email.trim())) {
+      setEmailError("Email không hợp lệ!");
+      return;
+    }
+
+    try {
+      setIsCheckingOut(true);
+      setEmailError("");
+
+      // Phân loại sản phẩm
+      const esimItems = items.filter(item => item.product_type === "eSIM" || !item.product_type);
+      const topUpSimItems = items.filter(item => item.product_type === "Top-Up SIM");
+
+      // Xử lý đơn hàng eSIM (nếu có)
+      if (esimItems.length > 0) {
+        const esimProdList = esimItems.map((item) => ({
+          wmproductId: item.product_code,
+          qty: item.quantity,
+        }));
+
+        const esimResponse = await productApi.order({
+          email: email.trim(),
+          prodList: esimProdList,
+        });
+
+        if (esimResponse.error) {
+          toast.error(esimResponse.error || "Đặt hàng eSIM thất bại!");
+          return;
+        }
+      }
+
+      // Xử lý đơn hàng Top-Up SIM (nếu có)
+      if (topUpSimItems.length > 0) {
+        const topUpSimProdList: Array<{
+          wmproductId: string;
+          day: number;
+          simNum: string;
+        }> = [];
+
+        topUpSimItems.forEach(item => {
+          if (item.id && simNums[String(item.id)]) {
+            simNums[String(item.id)].forEach(simNum => {
+              topUpSimProdList.push({
+                wmproductId: item.product_code,
+                day: item.days || 1,
+                simNum: simNum.trim(),
+              });
+            });
+          }
+        });
+
+        const topUpSimResponse = await productApi.orderTopUpSim({
+          email: email.trim(),
+          prodList: topUpSimProdList,
+        });
+
+        if (topUpSimResponse.error) {
+          toast.error(topUpSimResponse.error || "Đặt hàng Top-Up SIM thất bại!");
+          return;
+        }
+      }
+
+      // Success
+      const successMessage = 
+        esimItems.length > 0 && topUpSimItems.length > 0
+          ? "Đặt hàng thành công!"
+          : esimItems.length > 0
+          ? "Đặt hàng eSIM thành công!"
+          : "Đặt hàng Top-Up SIM thành công!";
+      
+      toast.success(successMessage);
+      clearCart();
+      handleCloseEmailModal();
+      handleCloseSimNumModal();
+      closeCart();
+    } catch (error) {
+      console.error("Checkout error:", error);
+      const apiError = error as ApiError;
+      toast.error(apiError.message || "Đặt hàng thất bại. Vui lòng thử lại!");
+    } finally {
+      setIsCheckingOut(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -154,10 +363,7 @@ function CartSidebar() {
                 Xóa tất cả
               </button>
               <button
-                onClick={() => {
-                  // TODO: Implement checkout API
-                  toast.success("Chức năng thanh toán sẽ được thêm sau!");
-                }}
+                onClick={handleOpenEmailModal}
                 className="flex-1 px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-medium transition-colors"
               >
                 Thanh toán
@@ -166,6 +372,160 @@ function CartSidebar() {
           </div>
         )}
       </div>
+
+      {/* SimNum Modal for Top-Up SIM */}
+      {showSimNumModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
+          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Nhập số SIM cho Top-Up SIM</h3>
+              <button
+                onClick={handleCloseSimNumModal}
+                className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="mb-4 space-y-4">
+              {items
+                .filter(item => item.product_type === "Top-Up SIM")
+                .map((item) => (
+                  <div key={item.id} className="border border-gray-200 rounded-lg p-4">
+                    <div className="mb-3">
+                      <h4 className="font-medium text-gray-900 mb-1">
+                        {item.product_name_vi || item.product_name_en || item.product_code}
+                      </h4>
+                      <p className="text-sm text-gray-600">Mã sản phẩm: {item.product_code}</p>
+                      <p className="text-sm text-gray-600">Số lượng: {item.quantity}</p>
+                    </div>
+                    <div className="space-y-2">
+                      {item.id && simNums[String(item.id)]?.map((simNum, index) => (
+                        <div key={index}>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Số SIM {index + 1} <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={simNum}
+                            onChange={(e) => handleSimNumChange(String(item.id), index, e.target.value)}
+                            placeholder={`Nhập số SIM ${index + 1}`}
+                            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all ${
+                              simNumErrors[`${item.id}_${index}`]
+                                ? "border-red-300 focus:border-red-500 focus:ring-red-500"
+                                : "border-gray-300"
+                            }`}
+                          />
+                          {simNumErrors[`${item.id}_${index}`] && (
+                            <p className="mt-1 text-sm text-red-600">{simNumErrors[`${item.id}_${index}`]}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={handleCloseSimNumModal}
+                className="flex-1 px-4 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-medium transition-colors"
+              >
+                Hủy
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmSimNums}
+                className="flex-1 px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-medium transition-colors"
+              >
+                Tiếp tục
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Email Modal */}
+      {showEmailModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
+          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Nhập email để thanh toán</h3>
+              <button
+                onClick={handleCloseEmailModal}
+                disabled={isCheckingOut}
+                className="p-1 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="checkout-email" className="block text-sm font-medium text-gray-700 mb-2">
+                Email <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="checkout-email"
+                type="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setEmailError("");
+                }}
+                placeholder="Nhập email của bạn"
+                disabled={isCheckingOut}
+                className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all ${
+                  emailError
+                    ? "border-red-300 focus:border-red-500 focus:ring-red-500"
+                    : "border-gray-300"
+                } ${isCheckingOut ? "bg-gray-50 cursor-not-allowed" : ""}`}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !isCheckingOut) {
+                    handleCheckout();
+                  }
+                }}
+              />
+              {emailError && (
+                <p className="mt-1 text-sm text-red-600">{emailError}</p>
+              )}
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={handleCloseEmailModal}
+                disabled={isCheckingOut}
+                className="flex-1 px-4 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Hủy
+              </button>
+              <button
+                type="button"
+                onClick={handleCheckout}
+                disabled={isCheckingOut}
+                className="flex-1 px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {isCheckingOut ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Đang xử lý...
+                  </>
+                ) : (
+                  "Xác nhận"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

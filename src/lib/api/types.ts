@@ -171,3 +171,72 @@ export interface ListCoverageResponse {
   message?: string;
   error?: string;
 }
+
+// Order Types
+export interface OrderItem {
+  wmproductId: string;
+  qty: number;
+}
+
+export interface CreateOrderRequest {
+  email: string;
+  prodList: OrderItem[];
+}
+
+export interface CreateOrderResponse {
+  message?: string;
+  error?: string;
+  data?: unknown;
+}
+
+// Top-Up SIM Order Types
+export interface TopUpSimOrderItem {
+  wmproductId: string;
+  day: number;
+  simNum: string;
+}
+
+export interface CreateTopUpSimOrderRequest {
+  email: string;
+  prodList: TopUpSimOrderItem[];
+}
+
+export interface CreateTopUpSimOrderResponse {
+  message?: string;
+  error?: string;
+  data?: unknown;
+}
+
+// Order List Types
+export interface OrderItemDetail {
+  id: number;
+  wmproductId: string;
+  iccid: string;
+  productName: string;
+  redemptionCode: string;
+  qrCode: string;
+  price: number;
+  status: number;
+  create_at: string;
+  update_at: string;
+}
+
+export interface Order {
+  orderId: string;
+  items: OrderItemDetail[];
+}
+
+export interface ListOrdersRequest {
+  limit?: number;
+  page?: number;
+  sort?: "asc" | "desc";
+}
+
+export interface ListOrdersResponse {
+  data?: Order[];
+  total?: number;
+  page?: number;
+  limit?: number;
+  message?: string;
+  error?: string;
+}
