@@ -131,4 +131,21 @@ export const productApi = {
     const response = await apiClient.get<ListOrdersResponse>(`/esim/list_order?${queryParams.toString()}`);
     return response.data as ListOrdersResponse;
   },
+
+  /**
+   * Lấy danh sách orders cho Card SIM
+   * @param params - Query parameters (limit, page, sort)
+   * @returns Response với danh sách orders
+   */
+  listCardSimOrders: async (params: ListOrdersRequest = {}): Promise<ListOrdersResponse> => {
+    const { limit = 10, page = 1, sort = "desc" } = params;
+    const queryParams = new URLSearchParams({
+      limit: limit.toString(),
+      page: page.toString(),
+      sort: sort,
+    });
+    
+    const response = await apiClient.get<ListOrdersResponse>(`/card_esim/list_order?${queryParams.toString()}`);
+    return response.data as ListOrdersResponse;
+  },
 };

@@ -6,7 +6,7 @@ export default function OrderPage() {
         <div>
             <Breadcrumb title="My Order" path={[
                 { label: "Home", href: "/" },
-                { label: "My Order"}
+                { label: "My Order Esim"}
             ]} />
             <OrderList />
         </div>

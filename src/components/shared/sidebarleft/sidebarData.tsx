@@ -30,9 +30,14 @@ export const sidebarData = [
     href: "/admin/my-bill",
   },
   {
-    title: "My Order",
+    title: "My Order Esim",
     icon: "📦",
-    href: "/admin/my-order",
+    href: "/admin/my-order-esim",
+  },
+  {
+    title: "My Order Card SIM",
+    icon: "📦",
+    href: "/admin/my-order-card-sim",
   },
   {
     title: "Return Order",
