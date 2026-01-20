@@ -1,7 +1,7 @@
 import SettingPage from "@/components/shared/settings";
 export const metadata = {
-  title: "Settings",
-  description: "All important announcements and updates.",
+  title: "Cài đặt",
+  description: "Quản lý cài đặt tài khoản của bạn.",
 };
 
 export default function NoticePage() {

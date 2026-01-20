@@ -46,21 +46,21 @@ export default function ReturnManagementPage() {
             className="px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all"
           />
           <input
-            placeholder="Redemption"
+            placeholder="Mã đổi thưởng"
             className="px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all"
           />
           <input
-            placeholder="Original Order Number"
+            placeholder="Số đơn hàng gốc"
             className="px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all"
           />
           <input
-            placeholder="Return Number"
+            placeholder="Số đơn trả lại"
             className="px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all"
             value={searchReturnNumber}
             onChange={(e) => setSearchReturnNumber(e.target.value)}
           />
           <select className="px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none bg-white">
-            <option>Return Status</option>
+            <option>Trạng thái trả lại</option>
           </select>
         </div>
 
@@ -80,16 +80,16 @@ export default function ReturnManagementPage() {
           </div>
           <div className="flex gap-2">
             <button className="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-medium transition-colors duration-200 shadow-sm hover:shadow-md">
-              Search
+              Tìm kiếm
             </button>
             <button className="px-5 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-medium transition-colors duration-200">
-              Reset
+              Đặt lại
             </button>
             <button className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200 shadow-sm hover:shadow-md flex items-center gap-2">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
-              Export billing
+              Xuất hóa đơn
             </button>
           </div>
         </div>
@@ -101,19 +101,19 @@ export default function ReturnManagementPage() {
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                Return Number
+                Số đơn trả lại
               </th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                Return Date
+                Ngày trả lại
               </th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                Total Refund
+                Tổng hoàn tiền
               </th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                Department/Branch
+                Phòng ban/Chi nhánh
               </th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                Return Status
+                Trạng thái trả lại
               </th>
             </tr>
           </thead>
@@ -132,7 +132,7 @@ export default function ReturnManagementPage() {
                   </td>
                   <td className="px-4 py-3 text-gray-700">{r.returnDate}</td>
                   <td className="px-4 py-3 text-gray-700 font-medium">
-                    ${r.totalRefund.toLocaleString()}
+                    {r.totalRefund.toLocaleString("vi-VN")} đ
                   </td>
                   <td className="px-4 py-3 text-gray-600">{r.branch}</td>
                   <td className="px-4 py-3">

@@ -4,9 +4,9 @@ import MyQuotation from "./myquotation";
 export default function Notice() {
     return (
         <div>
-            <Breadcrumb title="My Products" path={[
-                { label: "Home", href: "/" },
-                { label: "My Products"}
+            <Breadcrumb title="Sản phẩm" path={[
+                { label: "Trang chủ", href: "/" },
+                { label: "Sản phẩm"}
             ]} />
             <div className="bg-white rounded-lg shadow-sm border border-gray-200">
               <MyQuotation />

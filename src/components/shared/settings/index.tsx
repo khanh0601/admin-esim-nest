@@ -4,9 +4,9 @@ import FormSetting from "./form";
 export default function SettingPage() {
     return (
         <div>
-            <Breadcrumb title="Settings" path={[
-                { label: "Home", href: "/admin/notice" },
-                { label: "Settings"}
+            <Breadcrumb title="Cài đặt" path={[
+                { label: "Trang chủ", href: "/admin/notice" },
+                { label: "Cài đặt"}
             ]} />
             <div className="mt-6">
                 <FormSetting />

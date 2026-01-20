@@ -1,7 +1,7 @@
 import ReturnOrderPage from "@/components/shared/returnOrder";
 export const metadata = {
-  title: "Return Order",
-  description: "All important announcements and updates.",
+  title: "Đơn hàng trả lại",
+  description: "Xem và quản lý đơn hàng trả lại.",
 };
 
 export default function NoticePage() {

@@ -79,10 +79,10 @@ This adjustment helps simplify the structure and improves consistency across API
   return (
     <div>
       <Breadcrumb 
-        title="Daily Notice" 
+        title="Thông báo hàng ngày" 
         path={[
-          { label: "Home", href: "/admin/notice" },
-          { label: "Daily Notice"}
+          { label: "Trang chủ", href: "/admin/notice" },
+          { label: "Thông báo hàng ngày"}
         ]} 
       />
       <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 mt-6">

@@ -1,7 +1,7 @@
 import QuotationPage from "@/components/shared/quotation";
 export const metadata = {
-  title: "Product Management",
-  description: "Product Management",
+  title: "Quản lý sản phẩm",
+  description: "Quản lý sản phẩm",
 };
 
 export default function NoticePage() {

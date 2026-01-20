@@ -1,7 +1,7 @@
 import OrderPage from "@/components/shared/myOrder";
 export const metadata = {
-  title: "My Order Esim",
-  description: "All important announcements and updates.",
+  title: "Đơn hàng eSIM",
+  description: "Xem và quản lý đơn hàng eSIM của bạn.",
 };
 
 export default function MyBill() {

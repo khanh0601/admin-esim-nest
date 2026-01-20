@@ -1,7 +1,8 @@
 import RegisterPage from "@/components/shared/register";
 
 export const metadata = {
-  title: "Register Account",
+  title: "Đăng ký tài khoản",
+  description: "Đăng ký tài khoản mới.",
 };
 
 export default function Register() {

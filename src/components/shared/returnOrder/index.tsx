@@ -4,9 +4,9 @@ import ReturnManagementPage from "./listReturn";
 export default function ReturnOrderPage() {
     return (
         <div>
-            <Breadcrumb title="Return Order" path={[
-                { label: "Home", href: "/" },
-                { label: "Return Order"}
+            <Breadcrumb title="Đơn hàng trả lại" path={[
+                { label: "Trang chủ", href: "/" },
+                { label: "Đơn hàng trả lại"}
             ]} />
             <ReturnManagementPage />
         </div>

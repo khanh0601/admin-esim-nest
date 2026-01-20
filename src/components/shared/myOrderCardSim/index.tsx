@@ -5,9 +5,9 @@ import OrderListCardSim from "./orderListCardSim";
 export default function OrderCardSimPage() {
     return (
         <div>
-            <Breadcrumb title="My Order Card SIM" path={[
-                { label: "Home", href: "/" },
-                { label: "My Order Card SIM"}
+            <Breadcrumb title="Đơn hàng Card SIM" path={[
+                { label: "Trang chủ", href: "/" },
+                { label: "Đơn hàng Card SIM"}
             ]} />
             <OrderListCardSim />
         </div>

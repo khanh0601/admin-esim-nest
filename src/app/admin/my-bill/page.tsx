@@ -1,7 +1,7 @@
 import BillPage from "@/components/shared/myBill";
 export const metadata = {
-  title: "My Bill",
-  description: "All important announcements and updates.",
+  title: "Hóa đơn của tôi",
+  description: "Xem và quản lý hóa đơn của bạn.",
 };
 
 export default function MyBill() {

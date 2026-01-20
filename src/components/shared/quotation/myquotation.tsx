@@ -45,7 +45,7 @@ function CartButton() {
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
       </svg>
-      Cart
+      Giỏ hàng
       {mounted && totalItems > 0 && (
         <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
           {totalItems}
@@ -1084,12 +1084,12 @@ export default function MyQuotation() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
             <div>
               <label htmlFor="product-name" className="block text-sm font-medium text-gray-700 mb-2">
-                Product Name
+                Tên sản phẩm
               </label>
               <input
                 id="product-name"
                 type="text"
-                placeholder="Enter product name"
+                placeholder="Nhập tên sản phẩm"
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all"
                 value={productName}
                 onChange={(e) => setProductName(e.target.value)}
@@ -1098,12 +1098,12 @@ export default function MyQuotation() {
             </div>
             <div>
               <label htmlFor="days" className="block text-sm font-medium text-gray-700 mb-2">
-                Days
+                Số ngày
               </label>
               <input
                 id="days"
                 type="number"
-                placeholder="Enter days"
+                placeholder="Nhập số ngày"
                 min="0"
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all"
                 value={days}
@@ -1113,7 +1113,7 @@ export default function MyQuotation() {
             </div>
             <div>
               <label htmlFor="coverage-area" className="block text-sm font-medium text-gray-700 mb-2">
-                Coverage Area
+                Khu vực phủ sóng
               </label>
               <select
                 id="coverage-area"
@@ -1121,7 +1121,7 @@ export default function MyQuotation() {
                 value={coverageArea}
                 onChange={(e) => setCoverageArea(e.target.value)}
               >
-                <option value="">All Coverage Areas</option>
+                <option value="">Tất cả khu vực</option>
                 {coverageAreas.map((area) => (
                   <option key={area} value={area}>
                     {area}
@@ -1131,7 +1131,7 @@ export default function MyQuotation() {
             </div>
             <div>
               <label htmlFor="plan-type" className="block text-sm font-medium text-gray-700 mb-2">
-                Plan Type
+                Loại gói
               </label>
               <select
                 id="plan-type"
@@ -1139,7 +1139,7 @@ export default function MyQuotation() {
                 value={planType}
                 onChange={(e) => setPlanType(e.target.value === "" ? "" : Number(e.target.value))}
               >
-                <option value="">All Plan Types</option>
+                <option value="">Tất cả loại gói</option>
                 <option value="1">Gói theo ngày</option>
                 <option value="2">Gói theo thời hạn</option>
                 <option value="3">Gói không giới hạn</option>
@@ -1147,7 +1147,7 @@ export default function MyQuotation() {
             </div>
             <div>
               <label htmlFor="product-type-filter" className="block text-sm font-medium text-gray-700 mb-2">
-                Product Type
+                Loại sản phẩm
               </label>
               <select
                 id="product-type-filter"
@@ -1155,7 +1155,7 @@ export default function MyQuotation() {
                 value={productType}
                 onChange={(e) => setProductType(e.target.value)}
               >
-                <option value="">All Product Types</option>
+                <option value="">Tất cả loại sản phẩm</option>
                 <option value="Top-Up SIM">Top-Up SIM</option>
                 <option value="eSIM">eSIM</option>
               </select>
@@ -1174,7 +1174,7 @@ export default function MyQuotation() {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-              Search
+              Tìm kiếm
             </button>
             <button
               className="px-5 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2"
@@ -1183,7 +1183,7 @@ export default function MyQuotation() {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
-              Reset
+              Đặt lại
             </button>
           </div>
         </div>
@@ -1207,7 +1207,7 @@ export default function MyQuotation() {
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
-                Add Product
+                Thêm sản phẩm
               </button>
               {selectedItems.size > 0 && (
                 <button 
@@ -1217,7 +1217,7 @@ export default function MyQuotation() {
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>
-                  Delete Selected ({selectedItems.size})
+                  Xóa đã chọn ({selectedItems.size})
                 </button>
               )}
               <button 
@@ -1227,7 +1227,7 @@ export default function MyQuotation() {
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                 </svg>
-                Import
+                Nhập dữ liệu
               </button>
             </>
           )}
@@ -1249,29 +1249,29 @@ export default function MyQuotation() {
                   />
                 </th>
               )}
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Actions</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Supplier</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Product Code</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Product Type</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Product Name (VI)</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Product Name (EN)</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Sale Price</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Days</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Plan Type</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Data</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Network Types</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Coverage Area (EN)</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Coverage Area (VI)</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Telecommunication Providers</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Notification (EN)</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Notification (VI)</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap min-w-[300px]">Data Reset</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Prepaid Card</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Thao tác</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Nhà cung cấp</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Mã sản phẩm</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Loại sản phẩm</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Tên sản phẩm (VI)</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Tên sản phẩm (EN)</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Giá bán</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Số ngày</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Loại gói</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Dữ liệu</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Loại mạng</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Khu vực phủ sóng (EN)</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Khu vực phủ sóng (VI)</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Nhà mạng</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Thông báo (EN)</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Thông báo (VI)</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap min-w-[300px]">Đặt lại dữ liệu</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Thẻ trả trước</th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">APN</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Roaming Carrier</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Nhà mạng roaming</th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">SMS</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Receive</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Call</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Nhận</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Gọi</th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">TikTok</th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">ChatGPT</th>
             </tr>
@@ -1299,7 +1299,7 @@ export default function MyQuotation() {
                           <button
                             onClick={() => handleEdit(item)}
                             className="p-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200"
-                            title="Edit"
+                            title="Sửa"
                           >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -1308,7 +1308,7 @@ export default function MyQuotation() {
                           <button
                             onClick={() => handleDelete(item)}
                             className="p-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200"
-                            title="Delete"
+                            title="Xóa"
                           >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -1414,7 +1414,7 @@ export default function MyQuotation() {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              <p className="text-sm text-gray-600 font-medium">Loading products...</p>
+              <p className="text-sm text-gray-600 font-medium">Đang tải sản phẩm...</p>
             </div>
           </div>
         )}
@@ -1424,9 +1424,9 @@ export default function MyQuotation() {
       {totalPages > 0 && (
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-6 pt-6 border-t border-gray-200 w-full">
           <span className="text-sm text-gray-600">
-            Showing <span className="font-semibold text-gray-900">{totalItems > 0 ? 1 + (currentPage - 1) * pageSize : 0}</span> to{" "}
-            <span className="font-semibold text-gray-900">{Math.min(currentPage * pageSize, totalItems)}</span> of{" "}
-            <span className="font-semibold text-gray-900">{totalItems.toLocaleString()}</span> entries
+            Hiển thị <span className="font-semibold text-gray-900">{totalItems > 0 ? 1 + (currentPage - 1) * pageSize : 0}</span> đến{" "}
+            <span className="font-semibold text-gray-900">{Math.min(currentPage * pageSize, totalItems)}</span> trong{" "}
+            <span className="font-semibold text-gray-900">{totalItems.toLocaleString()}</span> mục
           </span>
           <div className="flex items-center gap-2 flex-wrap">
             <button
@@ -1438,7 +1438,7 @@ export default function MyQuotation() {
               disabled={currentPage === 1}
               className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 font-medium"
             >
-              Previous
+              Trước
             </button>
             
             {/* Page Numbers */}
@@ -1520,7 +1520,7 @@ export default function MyQuotation() {
             {/* Jump to Page */}
             {totalPages > 10 && (
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">Go to:</span>
+                <span className="text-sm text-gray-600">Đi đến:</span>
                 <input
                   type="number"
                   min="1"
@@ -1536,11 +1536,11 @@ export default function MyQuotation() {
                         loadProducts(page);
                         setJumpToPage("");
                       } else {
-                        toast.error(`Please enter a page number between 1 and ${totalPages}`);
+                        toast.error(`Vui lòng nhập số trang từ 1 đến ${totalPages}`);
                       }
                     }
                   }}
-                  placeholder="Page"
+                  placeholder="Trang"
                   className="w-20 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none text-sm"
                 />
                 <button

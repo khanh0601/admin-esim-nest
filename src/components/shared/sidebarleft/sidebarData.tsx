@@ -1,51 +1,52 @@
 export const sidebarData = [
+  // Temporarily hidden
+  // {
+  //   title: "Important Notice",
+  //   icon: "📢",
+  //   href: "/admin/notice",
+  // },
+  // {
+  //   title: "Daily Notice",
+  //   icon: "📢",
+  //   href: "/admin/announce",
+  // },
+  // {
+  //   title: "ESIM APN",
+  //   icon: "📢",
+  //   href: "/admin/esim-apn",
+  // },
   {
-    title: "Important Notice",
-    icon: "📢",
-    href: "/admin/notice",
-  },
-  {
-    title: "Daily Notice",
-    icon: "📢",
-    href: "/admin/announce",
-  },
-  {
-    title: "ESIM APN",
-    icon: "📢",
-    href: "/admin/esim-apn",
-  },
-  {
-    title: "Register Account",
+    title: "Đăng ký tài khoản",
     icon: "👤",
     href: "/admin/register",
   },
   {
-    title: "Products",
+    title: "Sản phẩm",
     icon: "📄",
     href: "/admin/products",
   },
   {
-    title: "My Bill",
+    title: "Hóa đơn của tôi",
     icon: "🧾",
     href: "/admin/my-bill",
   },
   {
-    title: "My Order Esim",
+    title: "Đơn hàng eSIM",
     icon: "📦",
     href: "/admin/my-order-esim",
   },
   {
-    title: "My Order Card SIM",
+    title: "Đơn hàng Card SIM",
     icon: "📦",
     href: "/admin/my-order-card-sim",
   },
   {
-    title: "Return Order",
+    title: "Đơn hàng trả lại",
     icon: "↩️",
     href: "/admin/return-order",
   },
   {
-    title: "Settings",
+    title: "Cài đặt",
     icon: "⚙️",
     href: "/admin/settings",
   },

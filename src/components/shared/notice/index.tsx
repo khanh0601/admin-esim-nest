@@ -4,9 +4,9 @@ import Content from "./content";
 export default function Notice() {
     return (
         <div>
-            <Breadcrumb title="Important Notice" path={[
-                { label: "Home", href: "/" },
-                { label: "Important Notice"}
+            <Breadcrumb title="Thông báo quan trọng" path={[
+                { label: "Trang chủ", href: "/" },
+                { label: "Thông báo quan trọng"}
             ]} />
             <Content />
         </div>

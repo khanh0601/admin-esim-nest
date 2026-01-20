@@ -4,9 +4,9 @@ import ListBill from "./bill";
 export default function BillPage() {
     return (
         <div>
-            <Breadcrumb title="My Bill" path={[
-                { label: "Home", href: "/" },
-                { label: "My Bill"}
+            <Breadcrumb title="Hóa đơn của tôi" path={[
+                { label: "Trang chủ", href: "/" },
+                { label: "Hóa đơn của tôi"}
             ]} />
             <div className="bg-white rounded-lg shadow-sm border border-gray-200">
               <ListBill />

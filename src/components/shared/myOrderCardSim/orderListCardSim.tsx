@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import { productApi } from "@/lib/api";
-import type { Order, ApiError } from "@/lib/api/types";
+import type { Order } from "@/lib/api/types";
 import toast from "react-hot-toast";
 
 const pageSize = 10;
@@ -225,9 +225,7 @@ export default function OrderListCardSim() {
       }
     } catch (error) {
       console.error("Failed to load orders:", error);
-      const apiError = error as ApiError;
       toast.error("Không thể tải danh sách đơn hàng!");
-      // toast.error(apiError.message || "Không thể tải danh sách đơn hàng!");
     } finally {
       setIsLoading(false);
     }
@@ -267,9 +265,9 @@ export default function OrderListCardSim() {
             <table className="w-full table-auto border border-gray-300 text-sm">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="border border-gray-300 px-2 py-2 text-left">ID Order</th>
+                  <th className="border border-gray-300 px-2 py-2 text-left">Mã đơn hàng</th>
                   <th className="border border-gray-300 px-2 py-2 text-left">Tổng tiền</th>
-                  <th className="border border-gray-300 px-2 py-2 text-left">Ngày order</th>
+                  <th className="border border-gray-300 px-2 py-2 text-left">Ngày đặt hàng</th>
                   <th className="border border-gray-300 px-2 py-2 text-left">Số lượng sản phẩm</th>
                   <th className="border border-gray-300 px-2 py-2 text-left">Thao tác</th>
                 </tr>
@@ -327,7 +325,7 @@ export default function OrderListCardSim() {
                 disabled={currentPage === 1 || isLoading}
                 className="px-3 py-1 border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
               >
-                Previous
+                Trước
               </button>
               {Array.from({ length: Math.min(totalPages, 10) }, (_, i) => {
                 const pageNum = i + 1;
@@ -349,7 +347,7 @@ export default function OrderListCardSim() {
                 disabled={currentPage === totalPages || isLoading}
                 className="px-3 py-1 border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
               >
-                Next
+                Sau
               </button>
             </div>
           </div>
