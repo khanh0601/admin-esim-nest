@@ -11,6 +11,7 @@ export default function FormSetting() {
     lastName: '',
     esimOrderCallbackUrl: '',
     topupCallbackUrl: '',
+    redeemCallbackUrl: '',
   })
   const [token, setToken] = useState('')
   const [isLoading, setIsLoading] = useState(true)
@@ -34,6 +35,7 @@ export default function FormSetting() {
             lastName: response.data.last_name || '',
             esimOrderCallbackUrl: response.data.order_call_back_url || '',
             topupCallbackUrl: response.data.top_up_call_back_url || '',
+            redeemCallbackUrl: response.data.redeem_call_back_url || '',
           })
         }
       } catch (err) {
@@ -67,6 +69,7 @@ export default function FormSetting() {
       const updateData = {
         order_call_back_url: formData.esimOrderCallbackUrl || undefined,
         top_up_call_back_url: formData.topupCallbackUrl || undefined,
+        redeem_call_back_url: formData.redeemCallbackUrl || undefined,
         first_name: formData.firstName || undefined,
         last_name: formData.lastName || undefined,
       }
@@ -204,6 +207,13 @@ export default function FormSetting() {
             value={formData.esimOrderCallbackUrl}
             onChange={handleChange}
             placeholder="Enter eSIM order callback URL"
+          />
+          <Input
+            label="Qrcode eSIM Callback"
+            name="redeemCallbackUrl"
+            value={formData.redeemCallbackUrl}
+            onChange={handleChange}
+            placeholder="Enter redeem callback URL"
           />
           <Input
             label="Top-up Callback URL"
