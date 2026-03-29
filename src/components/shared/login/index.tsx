@@ -5,7 +5,6 @@ import { useState } from "react";
 import Image from "next/image";
 import { useAuthStore } from "@/lib/stores";
 import { authApi } from "@/lib/api";
-import type { ApiError } from "@/lib/api/types";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -29,7 +28,7 @@ export default function LoginPage() {
         let errorStr = "Login failed";
         if (typeof data.error === "string") errorStr = data.error;
         else if (data.message && typeof data.message === "string") errorStr = data.message;
-        else if (data.error && typeof data.error === "object" && (data.error as any).msg) errorStr = (data.error as any).msg;
+        else if (data.error && typeof data.error === "object" && "msg" in data.error) errorStr = String((data.error as Record<string, unknown>).msg);
         
         setError(errorStr);
         return;
@@ -60,12 +59,17 @@ export default function LoginPage() {
       } else {
         router.push("/admin/notice");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       let errorMessage = "Incorrect account or password. Please try again.";
-      if (err?.message) {
-        if (typeof err.message === 'string') errorMessage = err.message;
-        else if (typeof err.message === 'object' && err.message.msg) errorMessage = err.message.msg;
-        else if (typeof err.message === 'object' && err.message.message) errorMessage = err.message.message;
+      
+      const errorObj = err as Record<string, unknown>;
+      if (errorObj && errorObj.message) {
+        if (typeof errorObj.message === 'string') errorMessage = errorObj.message;
+        else if (typeof errorObj.message === 'object' && errorObj.message !== null) {
+          const msgObj = errorObj.message as Record<string, unknown>;
+          if (typeof msgObj.msg === 'string') errorMessage = msgObj.msg;
+          else if (typeof msgObj.message === 'string') errorMessage = msgObj.message;
+        }
       }
       setError(errorMessage);
     } finally {
