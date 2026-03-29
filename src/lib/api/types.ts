@@ -37,6 +37,16 @@ export interface RefreshTokenResponse {
   message?: string;
 }
 
+export interface ChangePasswordRequest {
+  old_password?: string;
+  new_password?: string;
+}
+
+export interface ChangePasswordResponse {
+  message?: string;
+  error?: string;
+}
+
 // Register Types
 export interface RegisterRequest {
   account: string;

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/stores";
+import { authApi } from "@/lib/api/auth";
 
 export default function ChangePassword() {
   const router = useRouter();
@@ -62,30 +63,17 @@ export default function ChangePassword() {
     setLoading(true);
 
     try {
-      // ⚠️ TẠM THỜI: Mock change password - xóa phần này khi có API thật
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Mock success - uncomment khi có API:
-      /*
-      const response = await fetch(`${API_URL}/change-password`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          currentPassword: formData.currentPassword,
-          newPassword: formData.newPassword,
-        }),
+      const response = await authApi.changePassword({
+        old_password: formData.currentPassword,
+        new_password: formData.newPassword,
       });
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "Failed to change password");
+      if (response.error) {
+        throw new Error(response.error);
       }
-      */
 
       // Success - redirect to settings or show success message
-      alert("Password changed successfully!");
+      alert(response.message || "Password changed successfully!");
       router.push("/admin/settings");
     } catch (error) {
       setError(

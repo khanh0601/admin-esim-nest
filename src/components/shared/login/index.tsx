@@ -26,7 +26,12 @@ export default function LoginPage() {
       
       // Kiểm tra nếu có error trong response
       if (data.error) {
-        setError(data.error || "Login failed");
+        let errorStr = "Login failed";
+        if (typeof data.error === "string") errorStr = data.error;
+        else if (data.message && typeof data.message === "string") errorStr = data.message;
+        else if (data.error && typeof data.error === "object" && (data.error as any).msg) errorStr = (data.error as any).msg;
+        
+        setError(errorStr);
         return;
       }
 
@@ -55,12 +60,14 @@ export default function LoginPage() {
       } else {
         router.push("/admin/notice");
       }
-    } catch (err) {
-      console.error(err);
-      const apiError = err as ApiError;
-      setError(
-        apiError.message || "Incorrect account or password. Please try again."
-      );
+    } catch (err: any) {
+      let errorMessage = "Incorrect account or password. Please try again.";
+      if (err?.message) {
+        if (typeof err.message === 'string') errorMessage = err.message;
+        else if (typeof err.message === 'object' && err.message.msg) errorMessage = err.message.msg;
+        else if (typeof err.message === 'object' && err.message.message) errorMessage = err.message.message;
+      }
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

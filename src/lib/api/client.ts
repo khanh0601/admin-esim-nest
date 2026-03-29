@@ -83,9 +83,18 @@ class ApiClient {
         }
       }
 
-      if (!response.ok || data.error || data.msg) {
+      if (!response.ok || data.error || data.msg || data.message) {
+        // Extract string message safely
+        let errorMsg = "An error occurred";
+        
+        if (typeof data.msg === "string") errorMsg = data.msg;
+        else if (data.msg && typeof data.msg === "object" && (data.msg as any).msg) errorMsg = (data.msg as any).msg;
+        else if (typeof data.error === "string") errorMsg = data.error;
+        else if (data.error && typeof data.error === "object" && (data.error as any).msg) errorMsg = (data.error as any).msg;
+        else if (typeof data.message === "string") errorMsg = data.message;
+        
         const error: ApiError = {
-          message: (data.msg as string) || (data.error as string) || (data.message as string) || "An error occurred",
+          message: errorMsg,
           status: statusCode,
           errors: data.errors as Record<string, string[]> | undefined,
         };

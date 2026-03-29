@@ -1,5 +1,12 @@
 import { apiClient } from "./client";
-import type { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } from "./types";
+import type {
+  LoginRequest,
+  LoginResponse,
+  RegisterRequest,
+  RegisterResponse,
+  ChangePasswordRequest,
+  ChangePasswordResponse,
+} from "./types";
 
 export const authApi = {
   /**
@@ -71,6 +78,15 @@ export const authApi = {
     const response = await apiClient.post<RegisterResponse>("/user/create_user", data);
     const result = response.data as RegisterResponse;
     return result;
+  },
+
+  /**
+   * Đổi mật khẩu
+   * @param data - Thông tin mật khẩu cũ và mới
+   */
+  changePassword: async (data: ChangePasswordRequest): Promise<ChangePasswordResponse> => {
+    const response = await apiClient.patch<ChangePasswordResponse>("/user/change_pass", data);
+    return response.data as ChangePasswordResponse;
   },
 };
 
