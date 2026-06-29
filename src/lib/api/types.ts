@@ -84,6 +84,7 @@ export interface UserProfile {
   top_up_call_back_url?: string;
   create_at: string;
   update_at: string;
+  locked?: boolean;
 }
 
 export interface UserProfileResponse {
@@ -240,6 +241,14 @@ export interface ListOrdersRequest {
   limit?: number;
   page?: number;
   sort?: "asc" | "desc";
+}
+
+export interface ListOrdersByAdminRequest {
+  limit?: number;
+  page?: number;
+  sort?: "asc" | "desc";
+  orderId?: string;
+  userId?: string | number;
 }
 
 export interface ListOrdersResponse {

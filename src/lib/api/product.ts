@@ -1,5 +1,5 @@
 import { apiClient } from "./client";
-import type { SearchProductsRequest, SearchProductsResponse, GetProductsRequest, GetProductsResponse, Product, ListCoverageResponse, CreateOrderRequest, CreateOrderResponse, CreateTopUpSimOrderRequest, CreateTopUpSimOrderResponse, ListOrdersRequest, ListOrdersResponse } from "./types";
+import type { SearchProductsRequest, SearchProductsResponse, GetProductsRequest, GetProductsResponse, Product, ListCoverageResponse, CreateOrderRequest, CreateOrderResponse, CreateTopUpSimOrderRequest, CreateTopUpSimOrderResponse, ListOrdersRequest, ListOrdersResponse, ListOrdersByAdminRequest } from "./types";
 
 export const productApi = {
   /**
@@ -129,6 +129,31 @@ export const productApi = {
     });
     
     const response = await apiClient.get<ListOrdersResponse>(`/esim/list_order?${queryParams.toString()}`);
+    return response.data as ListOrdersResponse;
+  },
+
+  /**
+   * Lấy danh sách tất cả orders (dành cho Admin)
+   * @param params - Query parameters (limit, page, sort, orderId, userId)
+   * @returns Response với danh sách orders
+   */
+  listOrdersByAdmin: async (params: ListOrdersByAdminRequest = {}): Promise<ListOrdersResponse> => {
+    const { limit = 10, page = 1, sort = "desc", orderId, userId } = params;
+    const queryParams = new URLSearchParams({
+      limit: limit.toString(),
+      page: page.toString(),
+      sort: sort,
+    });
+    
+    if (orderId && orderId.trim() !== "") {
+      queryParams.append("orderId", orderId.trim());
+    }
+    
+    if (userId !== undefined && userId !== null && userId !== "") {
+      queryParams.append("userId", userId.toString());
+    }
+    
+    const response = await apiClient.get<ListOrdersResponse>(`/esim/list_order_by_admin?${queryParams.toString()}`);
     return response.data as ListOrdersResponse;
   },
 

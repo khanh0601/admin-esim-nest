@@ -14,6 +14,7 @@ export default function ChangePassword() {
     confirmPassword: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -72,9 +73,8 @@ export default function ChangePassword() {
         throw new Error(response.error);
       }
 
-      // Success - redirect to settings or show success message
-      alert(response.message || "Password changed successfully!");
-      router.push("/admin/settings");
+      // Success - show success screen
+      setIsSuccess(true);
     } catch (error) {
       setError(
         error instanceof Error ? error.message : "Failed to change password"
@@ -83,6 +83,30 @@ export default function ChangePassword() {
       setLoading(false);
     }
   };
+
+  if (isSuccess) {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-white rounded-lg shadow-md p-8 text-center animate-in fade-in zoom-in duration-300">
+          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg className="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-3">Password Updated!</h2>
+          <p className="text-gray-600 mb-8 text-lg">
+            Your password has been changed successfully.
+          </p>
+          <button
+            onClick={() => router.push("/admin/settings")}
+            className="px-8 py-3 bg-gradient-to-r from-teal-600 to-cyan-600 text-white rounded-lg font-bold hover:from-teal-700 hover:to-cyan-700 transition-all shadow-md hover:shadow-lg inline-block"
+          >
+            Back to Settings
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-2xl mx-auto">

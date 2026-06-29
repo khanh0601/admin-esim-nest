@@ -1,12 +1,61 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import Breadcrumb from "../global/Breakcrum";
-import { authApi } from "@/lib/api";
+import { authApi, userApi } from "@/lib/api";
 import { passwordConstraintContent } from "@/lib/constants";
-import type { ApiError } from "@/lib/api/types";
+import type { ApiError, UserProfile } from "@/lib/api/types";
+import { useAuthStore } from "@/lib/stores";
+import toast from "react-hot-toast";
+
+// Confirm Modal Component
+function ConfirmModal({
+  isOpen,
+  title,
+  message,
+  onConfirm,
+  onCancel,
+  confirmText = "Xác nhận",
+  cancelText = "Hủy",
+  confirmButtonClass = "bg-red-600 hover:bg-red-700 text-white",
+}: {
+  isOpen: boolean;
+  title: string;
+  message: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+  confirmText?: string;
+  cancelText?: string;
+  confirmButtonClass?: string;
+}) {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 animate-in fade-in zoom-in-95 duration-200">
+        <h3 className="text-lg font-bold text-gray-900 mb-2">{title}</h3>
+        <p className="text-sm text-gray-500 mb-6">{message}</p>
+        <div className="flex justify-end gap-3">
+          <button
+            onClick={onCancel}
+            className="px-4 py-2 border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg text-sm font-medium transition-colors"
+          >
+            {cancelText}
+          </button>
+          <button
+            onClick={onConfirm}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${confirmButtonClass}`}
+          >
+            {confirmText}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function RegisterPage() {
+  const { user: currentUser } = useAuthStore();
+
   const [account, setAccount] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -16,6 +65,26 @@ export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Listing states
+  const [users, setUsers] = useState<UserProfile[]>([]);
+  const [isUsersLoading, setIsUsersLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Confirm Modal state
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    userId: number;
+    account: string;
+    email: string;
+    action: "lock" | "unlock";
+  }>({
+    isOpen: false,
+    userId: 0,
+    account: "",
+    email: "",
+    action: "lock",
+  });
 
   // Password validation - check each requirement
   const passwordRequirements = useMemo(() => {
@@ -28,6 +97,28 @@ export default function RegisterPage() {
   const isPasswordValid = useMemo(() => {
     return passwordRequirements.every((req) => req.isValid);
   }, [passwordRequirements]);
+
+  // Load all users
+  const fetchUsers = useCallback(async () => {
+    try {
+      setIsUsersLoading(true);
+      const res = await userApi.listAllUsers();
+      if (res.data) {
+        setUsers(res.data);
+      } else if (res.error) {
+        toast.error(res.error || "Không thể tải danh sách người dùng!");
+      }
+    } catch (err) {
+      console.error("Failed to fetch users:", err);
+      toast.error("Không thể tải danh sách người dùng!");
+    } finally {
+      setIsUsersLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,6 +158,9 @@ export default function RegisterPage() {
       setFirstName("");
       setLastName("");
       
+      // Refresh user listing
+      fetchUsers();
+
       // Clear success message after 3 seconds
       setTimeout(() => {
         setSuccess(null);
@@ -81,6 +175,62 @@ export default function RegisterPage() {
     }
   };
 
+  const handleOpenConfirm = (user: UserProfile, action: "lock" | "unlock") => {
+    setConfirmModal({
+      isOpen: true,
+      userId: user.id,
+      account: user.account,
+      email: user.email,
+      action,
+    });
+  };
+
+  const handleConfirmAction = async () => {
+    const { userId, action, account } = confirmModal;
+    setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+    
+    const loadingToast = toast.loading(
+      action === "lock" ? "Đang khóa tài khoản..." : "Đang mở khóa tài khoản..."
+    );
+
+    try {
+      let res;
+      if (action === "lock") {
+        res = await userApi.lockUser(userId);
+      } else {
+        res = await userApi.unlockUser(userId);
+      }
+
+      if (res.error) {
+        toast.error(res.error || "Thao tác thất bại!", { id: loadingToast });
+      } else {
+        toast.success(
+          action === "lock"
+            ? `Đã khóa thành công tài khoản ${account}!`
+            : `Đã mở khóa thành công tài khoản ${account}!`,
+          { id: loadingToast }
+        );
+        fetchUsers();
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Thao tác thất bại!", { id: loadingToast });
+    }
+  };
+
+  const filteredUsers = useMemo(() => {
+    const query = searchQuery.toLowerCase().trim();
+    if (!query) return users;
+    return users.filter((u) => {
+      const fullName = `${u.first_name || ""} ${u.last_name || ""}`.toLowerCase();
+      return (
+        u.account.toLowerCase().includes(query) ||
+        u.email.toLowerCase().includes(query) ||
+        fullName.includes(query)
+      );
+    });
+  }, [users, searchQuery]);
+
   return (
     <div>
       <Breadcrumb 
@@ -91,6 +241,7 @@ export default function RegisterPage() {
         ]} 
       />
       
+      {/* Form đăng ký */}
       <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 mt-6">
         <div className="max-w-2xl mx-auto">
           <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Create New Account</h2>
@@ -336,6 +487,139 @@ export default function RegisterPage() {
           </form>
         </div>
       </div>
+
+      {/* Danh sách tài khoản người dùng */}
+      <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 mt-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-200 pb-4 mb-6 gap-3">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">Danh sách tài khoản</h2>
+            <p className="text-xs text-gray-500 mt-1">Quản lý trạng thái hoạt động và khóa/mở khóa tài khoản.</p>
+          </div>
+          
+          {/* Ô Tìm kiếm User */}
+          <div className="relative w-full sm:w-[300px]">
+            <input
+              type="text"
+              placeholder="Tìm kiếm tài khoản, email, tên..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 border border-gray-300 bg-white rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all text-gray-900"
+            />
+            <svg className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+        </div>
+
+        {/* Nội dung bảng */}
+        {isUsersLoading ? (
+          <div className="flex flex-col items-center justify-center py-12 text-gray-500">
+            <svg className="animate-spin h-8 w-8 text-teal-600 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span className="text-sm">Đang tải danh sách tài khoản...</span>
+          </div>
+        ) : filteredUsers.length === 0 ? (
+          <div className="text-center py-12 text-gray-500 border border-dashed border-gray-200 rounded-lg">
+            Không tìm thấy tài khoản nào.
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full table-auto border border-gray-200 rounded-lg overflow-hidden text-sm">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-700">Tài khoản</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-700">Họ & Tên</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-700">Email</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-700">Vai trò</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-700">Trạng thái</th>
+                  <th className="px-4 py-3 text-center font-semibold text-gray-700">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {filteredUsers.map((u) => {
+                  const isSelf = currentUser && String(currentUser.id) === String(u.id);
+                  const fullName = `${u.first_name || ""} ${u.last_name || ""}`.trim() || "-";
+                  const isLocked = u.locked;
+                  
+                  return (
+                    <tr key={u.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-4 py-3 font-semibold text-gray-900">{u.account}</td>
+                      <td className="px-4 py-3 text-gray-700">{fullName}</td>
+                      <td className="px-4 py-3 text-gray-600 font-mono text-xs">{u.email}</td>
+                      <td className="px-4 py-3">
+                        {u.role === 1 ? (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-red-100 text-red-800">
+                            Admin
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-blue-100 text-blue-800">
+                            User
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        {isLocked ? (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            Bị khóa
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Hoạt động
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        {isSelf ? (
+                          <span className="text-xs text-gray-400 italic">Tài khoản hiện tại</span>
+                        ) : isLocked ? (
+                          <button
+                            onClick={() => handleOpenConfirm(u, "unlock")}
+                            className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 rounded-lg text-xs font-semibold transition-colors"
+                          >
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                            </svg>
+                            Mở khóa
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleOpenConfirm(u, "lock")}
+                            className="inline-flex items-center gap-1.5 px-3 py-1 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-lg text-xs font-semibold transition-colors"
+                          >
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                            Khóa
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Popups xác nhận */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.action === "lock" ? "Xác nhận khóa tài khoản" : "Xác nhận mở khóa tài khoản"}
+        message={`Bạn có chắc chắn muốn ${
+          confirmModal.action === "lock" ? "khóa" : "mở khóa"
+        } tài khoản "${confirmModal.account}" (${confirmModal.email}) không? Người dùng bị khóa sẽ không thể truy cập hệ thống.`}
+        confirmText={confirmModal.action === "lock" ? "Khóa tài khoản" : "Mở khóa"}
+        confirmButtonClass={
+          confirmModal.action === "lock"
+            ? "bg-red-600 hover:bg-red-700 text-white"
+            : "bg-green-600 hover:bg-green-700 text-white"
+        }
+        onConfirm={handleConfirmAction}
+        onCancel={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 }
